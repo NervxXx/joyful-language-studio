@@ -4,80 +4,72 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 215 28% 17%;
-
+    --background: 220 14% 96%;
+    --foreground: 220 20% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 215 28% 17%;
-
+    --card-foreground: 220 20% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 215 28% 17%;
-
-    --primary: 217 91% 60%;
+    --popover-foreground: 220 20% 20%;
+    --primary: 220 70% 55%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 215 16% 47%;
+    --secondary: 220 10% 40%;
     --secondary-foreground: 0 0% 100%;
-
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-
-    --accent: 263 70% 58%;
+    --muted: 220 14% 92%;
+    --muted-foreground: 220 10% 50%;
+    --accent: 260 60% 55%;
     --accent-foreground: 0 0% 100%;
-
-    --success: 160 84% 39%;
+    --success: 160 70% 40%;
     --success-foreground: 0 0% 100%;
-
-    --warning: 38 92% 50%;
+    --warning: 38 90% 50%;
     --warning-foreground: 0 0% 100%;
-
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 217 91% 60%;
-
-    --radius: 1.5rem;
-
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 220 70% 55%;
+    --radius: 0.75rem;
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-foreground: 220 10% 40%;
+    --sidebar-primary: 220 70% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 220 14% 95%;
+    --sidebar-accent-foreground: 220 20% 20%;
+    --sidebar-border: 220 13% 90%;
+    --sidebar-ring: 220 70% 55%;
   }
 
   .dark {
-    --background: 222 84% 5%;
-    --foreground: 210 40% 98%;
-    --card: 222 84% 5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 84% 5%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
+    --background: 225 16% 8%;
+    --foreground: 220 15% 90%;
+    --card: 225 14% 11%;
+    --card-foreground: 220 15% 90%;
+    --popover: 225 14% 11%;
+    --popover-foreground: 220 15% 90%;
+    --primary: 220 70% 55%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 217 33% 18%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 18%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 263 70% 58%;
+    --secondary: 225 12% 18%;
+    --secondary-foreground: 220 15% 85%;
+    --muted: 225 12% 15%;
+    --muted-foreground: 220 10% 50%;
+    --accent: 260 50% 55%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 18%;
-    --input: 217 33% 18%;
-    --ring: 213 27% 84%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 217 91% 60%;
+    --success: 160 60% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 85% 50%;
+    --warning-foreground: 0 0% 100%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 220 15% 90%;
+    --border: 225 12% 16%;
+    --input: 225 12% 16%;
+    --ring: 220 70% 55%;
+    --sidebar-background: 225 16% 6%;
+    --sidebar-foreground: 220 10% 55%;
+    --sidebar-primary: 220 70% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 225 12% 12%;
+    --sidebar-accent-foreground: 220 15% 90%;
+    --sidebar-border: 225 12% 14%;
+    --sidebar-ring: 220 70% 55%;
   }
 }
 
@@ -87,14 +79,14 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 }
 
 @layer components {
   .card-hover {
-    @apply transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-lg active:scale-[0.98];
+    @apply transition-all duration-200 ease-out hover:bg-muted/50 active:scale-[0.99];
   }
 
   .gradient-primary {
@@ -106,14 +98,14 @@
   }
 
   .btn-gradient {
-    @apply gradient-primary text-primary-foreground font-semibold rounded-full py-4 px-8 w-full md:w-auto transition-all duration-200 hover:opacity-90 hover:shadow-lg active:scale-[0.98];
+    @apply gradient-primary text-primary-foreground font-medium rounded-lg py-3 px-6 transition-all duration-200 hover:opacity-90 active:scale-[0.98];
   }
 
   .chip-active {
-    @apply gradient-primary text-primary-foreground;
+    @apply bg-primary text-primary-foreground;
   }
 
   .chip-inactive {
-    @apply bg-muted text-muted-foreground border border-border;
+    @apply bg-muted text-muted-foreground border border-border hover:bg-muted/80;
   }
 }
