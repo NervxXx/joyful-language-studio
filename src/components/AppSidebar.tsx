@@ -21,9 +21,9 @@ const mainNav = [
 ];
 
 const extraNav = [
-  { title: "Grammar Quest", url: "#", icon: Gamepad2 },
-  { title: "Pronunciation", url: "#", icon: Mic },
-  { title: "Writing Mentor", url: "#", icon: PenLine },
+  { title: "Grammar Quest", url: "/grammar", icon: Gamepad2 },
+  { title: "Pronunciation", url: "/pronunciation", icon: Mic },
+  { title: "Writing Mentor", url: "/writing", icon: PenLine },
 ];
 
 export function AppSidebar() {
