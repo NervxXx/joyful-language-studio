@@ -6,7 +6,7 @@ import { Globe, Bell, Volume2, Moon, User, Palette } from "lucide-react";
 import { motion } from "framer-motion";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } };
-const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } };
+const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
 const languages = ["English", "Spanish", "French", "German", "Japanese", "Chinese"];
 
@@ -16,64 +16,48 @@ const SettingsPage = () => {
   const [targetLang, setTargetLang] = useState("English");
   const [notifications, setNotifications] = useState(true);
   const [sound, setSound] = useState(true);
-  const [darkMode, setDarkMode] = useState(true);
+  const [darkMode, setDarkMode] = useState(false);
   const [dailyGoal, setDailyGoal] = useState("20");
 
   return (
-    <motion.div className="p-6 lg:p-10 max-w-3xl mx-auto space-y-8" variants={container} initial="hidden" animate="show">
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight">Settings</h1>
-        <p className="text-muted-foreground mt-1">Customize your learning experience</p>
+    <motion.div className="p-5 md:p-8 lg:p-12 max-w-3xl mx-auto space-y-10" variants={container} initial="hidden" animate="show">
+      <motion.div variants={item} className="space-y-1.5">
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground font-heading tracking-tight">Settings</h1>
+        <p className="text-muted-foreground text-sm">Customize your learning experience</p>
       </motion.div>
 
       {/* Profile */}
       <motion.section variants={item} className="space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <User size={14} /> Profile
-        </h2>
-        <Card className="p-5 bg-card border-border space-y-4">
+        <h2 className="section-heading flex items-center gap-2"><User size={13} /> Profile</h2>
+        <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl space-y-5">
           <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Name</label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} className="h-11 bg-background border-border" />
+            <label className="text-sm font-medium text-muted-foreground">Name</label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} className="h-12 bg-background border-border rounded-xl text-base md:text-sm" />
           </div>
           <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Daily goal (minutes)</label>
-            <Input type="number" value={dailyGoal} onChange={(e) => setDailyGoal(e.target.value)} className="h-11 bg-background border-border w-32" />
+            <label className="text-sm font-medium text-muted-foreground">Daily goal (minutes)</label>
+            <Input type="number" value={dailyGoal} onChange={(e) => setDailyGoal(e.target.value)} className="h-12 bg-background border-border rounded-xl w-36 text-base md:text-sm" />
           </div>
         </Card>
       </motion.section>
 
       {/* Language */}
       <motion.section variants={item} className="space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <Globe size={14} /> Language
-        </h2>
-        <Card className="p-5 bg-card border-border space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Native language</label>
+        <h2 className="section-heading flex items-center gap-2"><Globe size={13} /> Language</h2>
+        <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl space-y-5">
+          <div className="space-y-2.5">
+            <label className="text-sm font-medium text-muted-foreground">Native language</label>
             <div className="flex flex-wrap gap-2">
               {["Russian", ...languages].map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setNativeLang(l)}
-                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${nativeLang === l ? "chip-active" : "chip-inactive"}`}
-                >
-                  {l}
-                </button>
+                <button key={l} onClick={() => setNativeLang(l)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${nativeLang === l ? "chip-active" : "chip-inactive"}`}>{l}</button>
               ))}
             </div>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm text-muted-foreground">Learning language</label>
+          <div className="space-y-2.5">
+            <label className="text-sm font-medium text-muted-foreground">Learning language</label>
             <div className="flex flex-wrap gap-2">
               {languages.map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setTargetLang(l)}
-                  className={`px-3 py-1.5 rounded-lg text-sm transition-all ${targetLang === l ? "chip-active" : "chip-inactive"}`}
-                >
-                  {l}
-                </button>
+                <button key={l} onClick={() => setTargetLang(l)} className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${targetLang === l ? "chip-active" : "chip-inactive"}`}>{l}</button>
               ))}
             </div>
           </div>
@@ -82,23 +66,21 @@ const SettingsPage = () => {
 
       {/* Preferences */}
       <motion.section variants={item} className="space-y-3">
-        <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-          <Palette size={14} /> Preferences
-        </h2>
-        <Card className="p-5 bg-card border-border divide-y divide-border">
+        <h2 className="section-heading flex items-center gap-2"><Palette size={13} /> Preferences</h2>
+        <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl divide-y divide-border">
           {[
             { icon: Bell, label: "Daily reminders", desc: "Get notified to practice", value: notifications, set: setNotifications },
             { icon: Volume2, label: "Sound effects", desc: "Play sounds on actions", value: sound, set: setSound },
             { icon: Moon, label: "Dark mode", desc: "Use dark theme", value: darkMode, set: setDarkMode },
           ].map((pref) => (
             <div key={pref.label} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
                   <pref.icon size={16} className="text-muted-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-foreground">{pref.label}</p>
-                  <p className="text-xs text-muted-foreground">{pref.desc}</p>
+                  <p className="text-sm font-semibold text-foreground">{pref.label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{pref.desc}</p>
                 </div>
               </div>
               <Switch checked={pref.value} onCheckedChange={pref.set} />
