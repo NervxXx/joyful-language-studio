@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, MoreVertical, Paperclip, Send } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Message {
   id: number;
@@ -43,9 +44,12 @@ const ChatPage = () => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-        {messages.map((msg) => (
-          <div
+        {messages.map((msg, i) => (
+          <motion.div
             key={msg.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: i * 0.08 }}
             className={`flex gap-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
           >
             {msg.sender === "ai" && (
@@ -62,7 +66,7 @@ const ChatPage = () => {
             >
               {msg.text}
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
 
