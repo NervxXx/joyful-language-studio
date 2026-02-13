@@ -1,26 +1,56 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { Bell } from "lucide-react";
+import { Bell, Menu, X } from "lucide-react";
 
 export default function AppLayout() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <AppSidebar />
+        {/* Desktop sidebar */}
+        <div className="hidden lg:block">
+          <AppSidebar />
+        </div>
+
+        {/* Mobile overlay menu */}
+        {mobileOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+            <div className="absolute left-0 top-0 bottom-0 w-72 bg-card shadow-xl animate-in slide-in-from-left duration-200">
+              <div className="flex items-center justify-between p-4 border-b border-border">
+                <span className="font-heading font-semibold text-foreground">Menu</span>
+                <button onClick={() => setMobileOpen(false)} className="p-2 rounded-lg hover:bg-muted transition-colors">
+                  <X size={18} className="text-muted-foreground" />
+                </button>
+              </div>
+              <AppSidebar />
+            </div>
+          </div>
+        )}
+
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Top bar */}
-          <header className="h-14 flex items-center justify-between px-4 border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-30 shrink-0">
+          {/* Sticky header */}
+          <header className="h-14 flex items-center justify-between px-4 lg:px-6 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-30 shrink-0">
             <div className="flex items-center gap-3">
-              <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
-              <span className="text-sm text-muted-foreground font-medium">LinguaAI</span>
+              {/* Mobile burger */}
+              <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">
+                <Menu size={20} className="text-foreground" />
+              </button>
+              {/* Desktop sidebar trigger */}
+              <div className="hidden lg:block">
+                <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
+              </div>
+              <span className="font-heading font-semibold text-foreground text-sm tracking-tight">LinguaAI</span>
             </div>
             <div className="flex items-center gap-2">
               <button className="relative p-2 rounded-lg hover:bg-muted transition-colors">
                 <Bell size={18} strokeWidth={1.5} className="text-muted-foreground" />
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
               </button>
-              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                 <span className="text-xs font-semibold text-primary">А</span>
               </div>
             </div>

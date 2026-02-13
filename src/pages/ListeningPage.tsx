@@ -4,7 +4,7 @@ import { Play, Pause, SkipForward, Volume2, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } };
-const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } };
+const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
 
 const episodes = [
   { id: 1, title: "At the Airport", level: "A2", duration: "2:30", lines: [
@@ -25,44 +25,44 @@ const ListeningPage = () => {
   const [activeLine, setActiveLine] = useState(0);
 
   return (
-    <motion.div className="p-6 lg:p-10 max-w-5xl mx-auto space-y-8" variants={container} initial="hidden" animate="show">
-      <motion.div variants={item}>
-        <h1 className="text-2xl font-semibold text-foreground tracking-tight">Listening Lab</h1>
-        <p className="text-muted-foreground mt-1">Listen, read subtitles, and improve comprehension</p>
+    <motion.div className="p-5 md:p-8 lg:p-12 max-w-4xl mx-auto space-y-10" variants={container} initial="hidden" animate="show">
+      <motion.div variants={item} className="space-y-1.5">
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground font-heading tracking-tight">Listening Lab</h1>
+        <p className="text-muted-foreground text-sm">Listen, read subtitles, and improve comprehension</p>
       </motion.div>
 
       {/* Episode list */}
-      <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {episodes.map((ep) => (
           <Card
             key={ep.id}
             onClick={() => setSelected(ep)}
-            className={`card-hover cursor-pointer p-4 transition-all ${
-              selected.id === ep.id ? "border-primary bg-primary/5" : "border-border bg-card"
+            className={`card-hover cursor-pointer p-4 md:p-5 rounded-xl transition-all ${
+              selected.id === ep.id ? "border-primary/30 bg-primary/5 shadow-sm" : "border-border bg-card shadow-sm"
             }`}
           >
-            <div className="flex items-center gap-2 mb-2">
-              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                selected.id === ep.id ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground"
+            <div className="flex items-center gap-2 mb-2.5">
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                selected.id === ep.id ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
               }`}>{ep.level}</span>
               <span className="text-xs text-muted-foreground">{ep.duration}</span>
             </div>
-            <p className={`text-sm font-medium ${selected.id === ep.id ? "text-primary" : "text-foreground"}`}>{ep.title}</p>
+            <p className={`text-sm font-semibold ${selected.id === ep.id ? "text-primary" : "text-foreground"}`}>{ep.title}</p>
           </Card>
         ))}
       </motion.div>
 
       {/* Player */}
       <motion.div variants={item}>
-        <Card className="p-5 bg-card border-border space-y-4">
+        <Card className="p-5 md:p-7 bg-card shadow-sm rounded-xl space-y-5">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-semibold text-foreground">{selected.title}</h2>
-              <p className="text-xs text-muted-foreground">{selected.level} · {selected.duration}</p>
+              <h2 className="font-bold text-foreground font-heading">{selected.title}</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">{selected.level} · {selected.duration}</p>
             </div>
             <button
               onClick={() => setShowTranslation(!showTranslation)}
-              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               {showTranslation ? <EyeOff size={14} /> : <Eye size={14} />}
               {showTranslation ? "Hide" : "Show"} translation
@@ -70,44 +70,42 @@ const ListeningPage = () => {
           </div>
 
           {/* Controls */}
-          <div className="flex items-center justify-center gap-4">
-            <button className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+          <div className="flex items-center justify-center gap-5">
+            <button className="p-2.5 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
               <Volume2 size={18} />
             </button>
             <button
               onClick={() => setPlaying(!playing)}
-              className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:opacity-90 transition-opacity"
+              className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:opacity-90 transition-opacity shadow-md"
             >
-              {playing ? <Pause size={20} /> : <Play size={20} className="ml-0.5" />}
+              {playing ? <Pause size={22} /> : <Play size={22} className="ml-0.5" />}
             </button>
-            <button className="p-2 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
+            <button className="p-2.5 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground">
               <SkipForward size={18} />
             </button>
           </div>
 
-          {/* Progress bar */}
-          <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
+          {/* Progress */}
+          <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
             <div className="h-full rounded-full bg-primary transition-all duration-300" style={{ width: "25%" }} />
           </div>
 
           {/* Subtitles */}
           {selected.lines.length > 0 && (
-            <div className="space-y-2 pt-2">
+            <div className="space-y-2 pt-3">
               {selected.lines.map((line, i) => (
                 <div
                   key={i}
                   onClick={() => setActiveLine(i)}
-                  className={`p-3 rounded-lg cursor-pointer transition-all ${
-                    activeLine === i ? "bg-primary/10 border border-primary/20" : "hover:bg-muted/50"
+                  className={`p-3.5 rounded-xl cursor-pointer transition-all ${
+                    activeLine === i ? "bg-primary/6 border border-primary/15" : "hover:bg-muted/60"
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <span className="text-[10px] text-muted-foreground font-mono mt-1 shrink-0">{line.time}</span>
                     <div>
                       <p className={`text-sm ${activeLine === i ? "text-foreground font-medium" : "text-foreground"}`}>{line.en}</p>
-                      {showTranslation && (
-                        <p className="text-xs text-muted-foreground mt-0.5">{line.ru}</p>
-                      )}
+                      {showTranslation && <p className="text-xs text-muted-foreground mt-1">{line.ru}</p>}
                     </div>
                   </div>
                 </div>

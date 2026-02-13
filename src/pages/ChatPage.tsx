@@ -25,32 +25,32 @@ const ChatPage = () => {
   return (
     <div className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border bg-card">
+      <header className="flex items-center justify-between px-4 md:px-6 py-3.5 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-30">
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 -ml-2 rounded-full hover:bg-muted transition-colors"
+            className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors"
           >
-            <ArrowLeft size={22} strokeWidth={1.5} className="text-foreground" />
+            <ArrowLeft size={20} strokeWidth={1.6} className="text-foreground" />
           </button>
           <div>
-            <h1 className="font-semibold text-foreground">AI Coach · B1 · Chef</h1>
+            <h1 className="font-bold text-foreground font-heading text-sm">AI Coach · B1 · Chef</h1>
           </div>
         </div>
-        <button className="p-2 rounded-full hover:bg-muted transition-colors">
-          <MoreVertical size={20} strokeWidth={1.5} className="text-muted-foreground" />
+        <button className="p-2 rounded-xl hover:bg-muted transition-colors">
+          <MoreVertical size={18} strokeWidth={1.6} className="text-muted-foreground" />
         </button>
       </header>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 space-y-5 max-w-3xl mx-auto w-full">
         {messages.map((msg, i) => (
           <motion.div
             key={msg.id}
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.08 }}
-            className={`flex gap-2 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+            className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
           >
             {msg.sender === "ai" && (
               <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm shrink-0 mt-1">
@@ -58,10 +58,10 @@ const ChatPage = () => {
               </div>
             )}
             <div
-              className={`max-w-[80%] px-4 py-3 text-[15px] leading-relaxed ${
+              className={`max-w-[75%] px-4 py-3 text-[15px] leading-relaxed ${
                 msg.sender === "user"
-                  ? "gradient-primary text-primary-foreground rounded-[20px] rounded-br-md"
-                  : "bg-muted text-foreground rounded-[20px] rounded-bl-md"
+                  ? "gradient-primary text-primary-foreground rounded-2xl rounded-br-md shadow-sm"
+                  : "bg-card text-foreground rounded-2xl rounded-bl-md shadow-sm border border-border"
               }`}
             >
               {msg.text}
@@ -71,19 +71,19 @@ const ChatPage = () => {
       </div>
 
       {/* Input */}
-      <div className="px-4 py-3 border-t border-border bg-card">
-        <div className="flex items-center gap-2 bg-muted rounded-full px-4 py-2">
+      <div className="px-4 md:px-6 py-3.5 border-t border-border bg-card/80 backdrop-blur-md">
+        <div className="flex items-center gap-2.5 bg-muted rounded-2xl px-4 py-2.5 max-w-3xl mx-auto">
           <button className="p-1 text-muted-foreground hover:text-foreground transition-colors">
-            <Paperclip size={20} strokeWidth={1.5} />
+            <Paperclip size={18} strokeWidth={1.6} />
           </button>
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
-            className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-[15px]"
+            className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base md:text-[15px]"
           />
-          <button className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center shrink-0">
-            <Send size={16} strokeWidth={2} className="text-primary-foreground" />
+          <button className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center shrink-0 shadow-sm">
+            <Send size={15} strokeWidth={2} className="text-primary-foreground" />
           </button>
         </div>
       </div>

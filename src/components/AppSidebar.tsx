@@ -1,6 +1,5 @@
 import { Home, MessageCircle, BookOpen, Settings, Headphones, Gamepad2, Mic, PenLine, Zap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
-import { useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -29,22 +28,21 @@ const extraNav = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const location = useLocation();
 
-  const linkClass = "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors";
+  const linkClass = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors";
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
       <div className="px-4 py-5 flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-lg gradient-primary flex items-center justify-center shrink-0">
-          <Zap size={16} className="text-primary-foreground" />
+        <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center shrink-0 shadow-sm">
+          <Zap size={15} className="text-primary-foreground" />
         </div>
-        {!collapsed && <span className="font-semibold text-foreground text-base tracking-tight">LinguaAI</span>}
+        {!collapsed && <span className="font-heading font-bold text-foreground text-base tracking-tight">LinguaAI</span>}
       </div>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[11px] uppercase tracking-wider text-muted-foreground/60 px-3 mb-1">
+          <SidebarGroupLabel className="section-heading px-3 mb-1.5">
             Learn
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -56,9 +54,9 @@ export function AppSidebar() {
                       to={item.url}
                       end={item.url === "/"}
                       className={linkClass}
-                      activeClassName="bg-sidebar-accent text-foreground font-medium"
+                      activeClassName="bg-primary/8 text-primary font-medium"
                     >
-                      <item.icon size={18} strokeWidth={1.5} className="shrink-0" />
+                      <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -69,7 +67,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         <SidebarGroup>
-          <SidebarGroupLabel className="text-[11px] uppercase tracking-wider text-muted-foreground/60 px-3 mb-1">
+          <SidebarGroupLabel className="section-heading px-3 mb-1.5">
             More
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -80,9 +78,9 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       className={linkClass}
-                      activeClassName="bg-sidebar-accent text-foreground font-medium"
+                      activeClassName="bg-primary/8 text-primary font-medium"
                     >
-                      <item.icon size={18} strokeWidth={1.5} className="shrink-0" />
+                      <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -101,9 +99,9 @@ export function AppSidebar() {
                     <NavLink
                       to="/settings"
                       className={linkClass}
-                      activeClassName="bg-sidebar-accent text-foreground font-medium"
+                      activeClassName="bg-primary/8 text-primary font-medium"
                     >
-                      <Settings size={18} strokeWidth={1.5} className="shrink-0" />
+                      <Settings size={18} strokeWidth={1.6} className="shrink-0" />
                       {!collapsed && <span>Settings</span>}
                     </NavLink>
                   </SidebarMenuButton>
