@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { motion } from "framer-motion";
+
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.08 } } };
+const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } };
 
 const levels = ["A1", "A2", "B1", "B2", "C1"];
 
@@ -21,14 +25,14 @@ const SetupPage = () => {
   const [situation, setSituation] = useState("");
 
   return (
-    <div className="p-6 lg:p-10 max-w-3xl mx-auto space-y-8">
-      <div>
+    <motion.div className="p-6 lg:p-10 max-w-3xl mx-auto space-y-8" variants={container} initial="hidden" animate="show">
+      <motion.div variants={item}>
         <h1 className="text-2xl font-semibold text-foreground tracking-tight">New conversation</h1>
         <p className="text-muted-foreground mt-1">Set up your practice session</p>
-      </div>
+      </motion.div>
 
       {/* Level */}
-      <section className="space-y-3">
+      <motion.section variants={item} className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Level</h2>
         <div className="flex flex-wrap gap-2">
           {levels.map((l) => (
@@ -43,10 +47,10 @@ const SetupPage = () => {
             </button>
           ))}
         </div>
-      </section>
+      </motion.section>
 
       {/* Role */}
-      <section className="space-y-3">
+      <motion.section variants={item} className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Context</h2>
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
           {roles.map((r) => (
@@ -66,10 +70,10 @@ const SetupPage = () => {
             </Card>
           ))}
         </div>
-      </section>
+      </motion.section>
 
       {/* Situation */}
-      <section className="space-y-3">
+      <motion.section variants={item} className="space-y-3">
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Situation (optional)</h2>
         <Input
           value={situation}
@@ -77,13 +81,15 @@ const SetupPage = () => {
           placeholder="e.g. Ordering food in a restaurant"
           className="h-11 bg-card border-border"
         />
-      </section>
+      </motion.section>
 
       {/* Start */}
-      <button onClick={() => navigate("/chat")} className="btn-gradient text-sm">
-        Start Speaking →
-      </button>
-    </div>
+      <motion.div variants={item}>
+        <button onClick={() => navigate("/chat")} className="btn-gradient text-sm">
+          Start Speaking →
+        </button>
+      </motion.div>
+    </motion.div>
   );
 };
 

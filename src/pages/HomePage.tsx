@@ -1,6 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Flame, Clock, Target, TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { motion, type Variants } from "framer-motion";
+
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07 } },
+};
+const item: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.25, 0.1, 0.25, 1] } },
+};
 
 const stats = [
   { icon: Flame, label: "Streak", value: "12 days", color: "text-warning" },
@@ -13,17 +23,17 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="p-6 lg:p-10 max-w-5xl mx-auto space-y-8">
+    <motion.div className="p-6 lg:p-10 max-w-5xl mx-auto space-y-8" variants={container} initial="hidden" animate="show">
       {/* Greeting */}
-      <div>
+      <motion.div variants={item}>
         <h1 className="text-2xl lg:text-3xl font-semibold text-foreground tracking-tight">
           Привет, Алекс 👋
         </h1>
         <p className="text-muted-foreground mt-1">Готов продолжить обучение?</p>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {stats.map((stat) => (
           <Card key={stat.label} className="p-4 bg-card border-border">
             <div className="flex items-center gap-3">
@@ -37,9 +47,10 @@ const HomePage = () => {
             </div>
           </Card>
         ))}
-      </div>
+      </motion.div>
 
       {/* Daily Progress */}
+      <motion.div variants={item}>
       <Card className="p-5 bg-card border-border">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-foreground">Daily goal</span>
@@ -52,8 +63,10 @@ const HomePage = () => {
           />
         </div>
       </Card>
+      </motion.div>
 
       {/* Continue Card */}
+      <motion.div variants={item}>
       <Card
         onClick={() => navigate("/chat")}
         className="card-hover cursor-pointer p-5 bg-card border-border flex items-center gap-4"
@@ -67,9 +80,10 @@ const HomePage = () => {
         </div>
         <ArrowRight size={18} strokeWidth={1.5} className="text-muted-foreground shrink-0" />
       </Card>
+      </motion.div>
 
       {/* Mode Cards */}
-      <div>
+      <motion.div variants={item}>
         <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-3">Modes</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {[
@@ -93,8 +107,8 @@ const HomePage = () => {
             </Card>
           ))}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
