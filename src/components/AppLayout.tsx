@@ -3,25 +3,25 @@ import { Outlet } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
 import { Bell, Menu, X } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { tr } = useLanguage();
 
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        {/* Desktop sidebar */}
         <div className="hidden lg:block">
           <AppSidebar />
         </div>
 
-        {/* Mobile overlay menu */}
         {mobileOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
             <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
             <div className="absolute left-0 top-0 bottom-0 w-72 bg-card shadow-xl animate-in slide-in-from-left duration-200">
               <div className="flex items-center justify-between p-4 border-b border-border">
-                <span className="font-heading font-semibold text-foreground">Menu</span>
+                <span className="font-heading font-semibold text-foreground">{tr("nav.menu")}</span>
                 <button onClick={() => setMobileOpen(false)} className="p-2 rounded-lg hover:bg-muted transition-colors">
                   <X size={18} className="text-muted-foreground" />
                 </button>
@@ -32,14 +32,11 @@ export default function AppLayout() {
         )}
 
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Sticky header */}
           <header className="h-14 flex items-center justify-between px-4 lg:px-6 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-30 shrink-0">
             <div className="flex items-center gap-3">
-              {/* Mobile burger */}
               <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">
                 <Menu size={20} className="text-foreground" />
               </button>
-              {/* Desktop sidebar trigger */}
               <div className="hidden lg:block">
                 <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
               </div>
