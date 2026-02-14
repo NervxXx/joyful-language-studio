@@ -11,23 +11,25 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-
-const mainNav = [
-  { title: "Home", url: "/", icon: Home },
-  { title: "Free Conversation", url: "/setup", icon: MessageCircle },
-  { title: "Vocabulary", url: "/vocabulary", icon: BookOpen },
-  { title: "Listening Lab", url: "/listening", icon: Headphones },
-];
-
-const extraNav = [
-  { title: "Grammar Quest", url: "/grammar", icon: Gamepad2 },
-  { title: "Pronunciation", url: "/pronunciation", icon: Mic },
-  { title: "Writing Mentor", url: "/writing", icon: PenLine },
-];
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
+  const { tr } = useLanguage();
+
+  const mainNav = [
+    { title: tr("nav.home"), url: "/", icon: Home },
+    { title: tr("nav.freeConversation"), url: "/setup", icon: MessageCircle },
+    { title: tr("nav.vocabulary"), url: "/vocabulary", icon: BookOpen },
+    { title: tr("nav.listeningLab"), url: "/listening", icon: Headphones },
+  ];
+
+  const extraNav = [
+    { title: tr("nav.grammarQuest"), url: "/grammar", icon: Gamepad2 },
+    { title: tr("nav.pronunciation"), url: "/pronunciation", icon: Mic },
+    { title: tr("nav.writingMentor"), url: "/writing", icon: PenLine },
+  ];
 
   const linkClass = "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors";
 
@@ -43,19 +45,14 @@ export function AppSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="section-heading px-3 mb-1.5">
-            Learn
+            {tr("nav.learn")}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {mainNav.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === "/"}
-                      className={linkClass}
-                      activeClassName="bg-primary/8 text-primary font-medium"
-                    >
+                    <NavLink to={item.url} end={item.url === "/"} className={linkClass} activeClassName="bg-primary/8 text-primary font-medium">
                       <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -68,18 +65,14 @@ export function AppSidebar() {
 
         <SidebarGroup>
           <SidebarGroupLabel className="section-heading px-3 mb-1.5">
-            More
+            {tr("nav.more")}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {extraNav.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      className={linkClass}
-                      activeClassName="bg-primary/8 text-primary font-medium"
-                    >
+                    <NavLink to={item.url} className={linkClass} activeClassName="bg-primary/8 text-primary font-medium">
                       <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
                       {!collapsed && <span>{item.title}</span>}
                     </NavLink>
@@ -96,13 +89,9 @@ export function AppSidebar() {
               <SidebarMenu>
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
-                    <NavLink
-                      to="/settings"
-                      className={linkClass}
-                      activeClassName="bg-primary/8 text-primary font-medium"
-                    >
+                    <NavLink to="/settings" className={linkClass} activeClassName="bg-primary/8 text-primary font-medium">
                       <Settings size={18} strokeWidth={1.6} className="shrink-0" />
-                      {!collapsed && <span>Settings</span>}
+                      {!collapsed && <span>{tr("nav.settings")}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

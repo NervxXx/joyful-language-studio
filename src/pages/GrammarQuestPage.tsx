@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, XCircle, ArrowRight, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } };
 const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.4 } } };
@@ -17,6 +18,7 @@ const GrammarQuestPage = () => {
   const [selected, setSelected] = useState<number | null>(null);
   const [score, setScore] = useState(0);
   const [finished, setFinished] = useState(false);
+  const { tr } = useLanguage();
 
   const q = questions[current];
 
@@ -34,8 +36,8 @@ const GrammarQuestPage = () => {
   return (
     <motion.div className="p-5 md:p-8 lg:p-12 max-w-3xl mx-auto space-y-10" variants={container} initial="hidden" animate="show">
       <motion.div variants={item} className="space-y-1.5">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground font-heading tracking-tight">Grammar Quest</h1>
-        <p className="text-muted-foreground text-sm">Test your grammar knowledge</p>
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground font-heading tracking-tight">{tr("grammar.title")}</h1>
+        <p className="text-muted-foreground text-sm">{tr("grammar.subtitle")}</p>
       </motion.div>
 
       {!finished ? (
@@ -74,7 +76,7 @@ const GrammarQuestPage = () => {
                 <div className="pt-1 space-y-4">
                   <p className="text-sm text-muted-foreground leading-relaxed">{q.explanation}</p>
                   <button onClick={handleNext} className="btn-gradient text-sm flex items-center gap-2">
-                    {current < questions.length - 1 ? "Next" : "Finish"} <ArrowRight size={16} />
+                    {current < questions.length - 1 ? tr("grammar.next") : tr("grammar.finish")} <ArrowRight size={16} />
                   </button>
                 </div>
               )}
@@ -87,10 +89,10 @@ const GrammarQuestPage = () => {
             <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
               <Trophy size={28} className="text-primary" />
             </div>
-            <h2 className="text-xl font-bold text-foreground font-heading">Quest Complete!</h2>
-            <p className="text-muted-foreground">You scored <span className="text-primary font-bold">{score}/{questions.length}</span></p>
+            <h2 className="text-xl font-bold text-foreground font-heading">{tr("grammar.complete")}</h2>
+            <p className="text-muted-foreground">{tr("grammar.score")} <span className="text-primary font-bold">{score}/{questions.length}</span></p>
             <button onClick={() => { setCurrent(0); setSelected(null); setScore(0); setFinished(false); }} className="btn-gradient text-sm">
-              Try Again
+              {tr("grammar.tryAgain")}
             </button>
           </Card>
         </motion.div>

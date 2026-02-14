@@ -1,0 +1,153 @@
+import { createContext, useContext, useState, type ReactNode } from "react";
+
+type Lang = "ru" | "en";
+
+const t = {
+  // Sidebar & Nav
+  "nav.learn": { ru: "Обучение", en: "Learn" },
+  "nav.more": { ru: "Ещё", en: "More" },
+  "nav.home": { ru: "Главная", en: "Home" },
+  "nav.freeConversation": { ru: "Свободный диалог", en: "Free Conversation" },
+  "nav.vocabulary": { ru: "Словарь", en: "Vocabulary" },
+  "nav.listeningLab": { ru: "Аудирование", en: "Listening Lab" },
+  "nav.grammarQuest": { ru: "Грамматика", en: "Grammar Quest" },
+  "nav.pronunciation": { ru: "Произношение", en: "Pronunciation" },
+  "nav.writingMentor": { ru: "Письмо", en: "Writing Mentor" },
+  "nav.settings": { ru: "Настройки", en: "Settings" },
+  "nav.menu": { ru: "Меню", en: "Menu" },
+  "nav.library": { ru: "Библиотека", en: "Library" },
+  "nav.chat": { ru: "Чат", en: "Chat" },
+  "nav.stats": { ru: "Статистика", en: "Stats" },
+  "nav.profile": { ru: "Профиль", en: "Profile" },
+
+  // Home
+  "home.greeting": { ru: "Привет, Алекс 👋", en: "Hi, Alex 👋" },
+  "home.subtitle": { ru: "Готов продолжить обучение?", en: "Ready to continue learning?" },
+  "home.streak": { ru: "Серия", en: "Streak" },
+  "home.streakValue": { ru: "12 дней", en: "12 days" },
+  "home.today": { ru: "Сегодня", en: "Today" },
+  "home.todayValue": { ru: "13 мин", en: "13 min" },
+  "home.words": { ru: "Слова", en: "Words" },
+  "home.level": { ru: "Уровень", en: "Level" },
+  "home.dailyGoal": { ru: "Дневная цель", en: "Daily goal" },
+  "home.dailyGoalProgress": { ru: "13 / 20 мин", en: "13 / 20 min" },
+  "home.continueConversation": { ru: "Продолжить диалог", en: "Continue conversation" },
+  "home.continueDesc": { ru: "Роль: Повар · Уровень A2 · Осталось 4 мин", en: "Chef role · A2 level · 4 min left" },
+  "home.modes": { ru: "Режимы", en: "Modes" },
+  "home.freeConvTitle": { ru: "Свободный диалог", en: "Free Conversation" },
+  "home.freeConvDesc": { ru: "Выберите уровень и роль. Практикуйте реальные диалоги.", en: "Choose level & role. Practice real dialogues." },
+  "home.vocabTitle": { ru: "Режим словаря", en: "Vocabulary Mode" },
+  "home.vocabDesc": { ru: "Выучите 10 слов → Говорите с ИИ, используя их.", en: "Learn 10 words → Speak with AI using them." },
+  "home.listenTitle": { ru: "Аудирование", en: "Listening Lab" },
+  "home.listenDesc": { ru: "Видео + интерактивные субтитры.", en: "Video + interactive subtitles." },
+
+  // Setup
+  "setup.title": { ru: "Новый диалог", en: "New conversation" },
+  "setup.subtitle": { ru: "Настройте практическую сессию", en: "Set up your practice session" },
+  "setup.level": { ru: "Уровень", en: "Level" },
+  "setup.context": { ru: "Контекст", en: "Context" },
+  "setup.situation": { ru: "Ситуация (необязательно)", en: "Situation (optional)" },
+  "setup.situationPlaceholder": { ru: "напр. Заказ еды в ресторане", en: "e.g. Ordering food in a restaurant" },
+  "setup.start": { ru: "Начать говорить →", en: "Start Speaking →" },
+  "setup.chef": { ru: "Повар", en: "Chef" },
+  "setup.tourist": { ru: "Турист", en: "Tourist" },
+  "setup.shopAssistant": { ru: "Продавец", en: "Shop Assistant" },
+  "setup.officeWorker": { ru: "Офисный работник", en: "Office Worker" },
+  "setup.student": { ru: "Студент", en: "Student" },
+  "setup.fitnessCoach": { ru: "Фитнес-тренер", en: "Fitness Coach" },
+
+  // Vocabulary
+  "vocab.title": { ru: "Словарь", en: "Vocabulary" },
+  "vocab.subtitle": { ru: "В ресторане · 8 слов", en: "At the Restaurant · 8 words" },
+  "vocab.practice": { ru: "Практика с ИИ →", en: "Practice with AI →" },
+
+  // Chat
+  "chat.typeMessage": { ru: "Введите сообщение...", en: "Type your message..." },
+  "chat.vocabPractice": { ru: "Практика словаря", en: "Vocabulary Practice" },
+  "chat.activeWords": { ru: "🔤 Активные слова:", en: "🔤 Active words:" },
+
+  // Listening
+  "listening.title": { ru: "Аудирование", en: "Listening Lab" },
+  "listening.subtitle": { ru: "Слушайте, читайте субтитры и улучшайте понимание", en: "Listen, read subtitles, and improve comprehension" },
+  "listening.hideTranslation": { ru: "Скрыть перевод", en: "Hide translation" },
+  "listening.showTranslation": { ru: "Показать перевод", en: "Show translation" },
+
+  // Settings
+  "settings.title": { ru: "Настройки", en: "Settings" },
+  "settings.subtitle": { ru: "Настройте обучение под себя", en: "Customize your learning experience" },
+  "settings.profile": { ru: "Профиль", en: "Profile" },
+  "settings.name": { ru: "Имя", en: "Name" },
+  "settings.dailyGoal": { ru: "Дневная цель (минуты)", en: "Daily goal (minutes)" },
+  "settings.language": { ru: "Язык", en: "Language" },
+  "settings.nativeLang": { ru: "Родной язык", en: "Native language" },
+  "settings.preferences": { ru: "Настройки", en: "Preferences" },
+  "settings.reminders": { ru: "Ежедневные напоминания", en: "Daily reminders" },
+  "settings.remindersDesc": { ru: "Получать уведомления для практики", en: "Get notified to practice" },
+  "settings.sound": { ru: "Звуковые эффекты", en: "Sound effects" },
+  "settings.soundDesc": { ru: "Воспроизводить звуки при действиях", en: "Play sounds on actions" },
+  "settings.darkMode": { ru: "Тёмная тема", en: "Dark mode" },
+  "settings.darkModeDesc": { ru: "Использовать тёмную тему", en: "Use dark theme" },
+
+  // Grammar
+  "grammar.title": { ru: "Грамматика", en: "Grammar Quest" },
+  "grammar.subtitle": { ru: "Проверьте свои знания грамматики", en: "Test your grammar knowledge" },
+  "grammar.next": { ru: "Далее", en: "Next" },
+  "grammar.finish": { ru: "Завершить", en: "Finish" },
+  "grammar.complete": { ru: "Квест завершён!", en: "Quest Complete!" },
+  "grammar.score": { ru: "Ваш результат", en: "You scored" },
+  "grammar.tryAgain": { ru: "Попробовать снова", en: "Try Again" },
+
+  // Pronunciation
+  "pronunciation.title": { ru: "Произношение", en: "Pronunciation" },
+  "pronunciation.subtitle": { ru: "Слушайте, повторяйте и совершенствуйте акцент", en: "Listen, repeat, and perfect your accent" },
+  "pronunciation.listening": { ru: "Слушаю...", en: "Listening..." },
+  "pronunciation.attempts": { ru: "попыток записано", en: "attempt(s) recorded" },
+
+  // Writing
+  "writing.title": { ru: "Письменный наставник", en: "Writing Mentor" },
+  "writing.subtitle": { ru: "Практикуйте письмо с обратной связью от ИИ", en: "Practice writing with AI-powered feedback" },
+  "writing.placeholder": { ru: "Начните писать здесь...", en: "Start writing here..." },
+  "writing.words": { ru: "слов", en: "words" },
+  "writing.getFeedback": { ru: "Получить отзыв", en: "Get Feedback" },
+  "writing.aiFeedback": { ru: "Отзыв ИИ", en: "AI Feedback" },
+
+  // Not found
+  "notFound.title": { ru: "Страница не найдена", en: "Oops! Page not found" },
+  "notFound.back": { ru: "Вернуться на главную", en: "Return to Home" },
+} as const;
+
+type TranslationKey = keyof typeof t;
+
+interface LanguageContextType {
+  lang: Lang;
+  setLang: (lang: Lang) => void;
+  tr: (key: TranslationKey) => string;
+}
+
+const LanguageContext = createContext<LanguageContextType>({
+  lang: "ru",
+  setLang: () => {},
+  tr: (key) => t[key]?.ru || key,
+});
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>(() => {
+    const saved = localStorage.getItem("lingua-lang");
+    return (saved === "en" || saved === "ru") ? saved : "ru";
+  });
+
+  const changeLang = (newLang: Lang) => {
+    setLang(newLang);
+    localStorage.setItem("lingua-lang", newLang);
+  };
+
+  const tr = (key: TranslationKey) => t[key]?.[lang] || key;
+
+  return (
+    <LanguageContext.Provider value={{ lang, setLang: changeLang, tr }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export const useLanguage = () => useContext(LanguageContext);
