@@ -14,6 +14,7 @@ const t = {
   "nav.pronunciation": { ru: "Произношение", en: "Pronunciation" },
   "nav.writingMentor": { ru: "Письмо", en: "Writing Mentor" },
   "nav.settings": { ru: "Настройки", en: "Settings" },
+  "nav.skillMap": { ru: "Карта навыков", en: "Skill Map" },
   "nav.menu": { ru: "Меню", en: "Menu" },
   "nav.library": { ru: "Библиотека", en: "Library" },
   "nav.chat": { ru: "Чат", en: "Chat" },
@@ -65,6 +66,11 @@ const t = {
   "chat.typeMessage": { ru: "Введите сообщение...", en: "Type your message..." },
   "chat.vocabPractice": { ru: "Практика словаря", en: "Vocabulary Practice" },
   "chat.activeWords": { ru: "🔤 Активные слова:", en: "🔤 Active words:" },
+  "chat.coachGreeting": { ru: "Привет! Я твой коуч. Как пройдёт наше занятие — зависит от тебя. Не бойся ошибок, я здесь чтобы помочь! 💪", en: "Hi! I'm your coach. How our session goes depends on you. Don't be afraid of mistakes — I'm here to help! 💪" },
+  "chat.coachPersonality": { ru: "Ваш коуч", en: "Your Coach" },
+  "chat.coachFriendly": { ru: "Дружелюбный", en: "Friendly" },
+  "chat.coachStrict": { ru: "Строгий", en: "Strict" },
+  "chat.coachCalm": { ru: "Спокойный", en: "Calm" },
 
   // Listening
   "listening.title": { ru: "Аудирование", en: "Listening Lab" },
@@ -114,6 +120,35 @@ const t = {
   // Not found
   "notFound.title": { ru: "Страница не найдена", en: "Oops! Page not found" },
   "notFound.back": { ru: "Вернуться на главную", en: "Return to Home" },
+
+  // Skill Map
+  "skills.title": { ru: "Карта навыков", en: "Skill Map" },
+  "skills.subtitle": { ru: "Отслеживайте прогресс по каждому навыку", en: "Track your progress across every skill" },
+  "skills.overallLevel": { ru: "Общий уровень CEFR", en: "Overall CEFR Level" },
+  "skills.avgLevel": { ru: "Средний уровень", en: "Avg level" },
+  "skills.yourSkills": { ru: "Ваши навыки", en: "Your Skills" },
+  "skills.vocabulary": { ru: "Словарный запас", en: "Vocabulary" },
+  "skills.grammar": { ru: "Грамматика", en: "Grammar" },
+  "skills.fluency": { ru: "Беглость речи", en: "Fluency" },
+  "skills.listening": { ru: "Аудирование", en: "Listening" },
+  "skills.pronunciation": { ru: "Произношение", en: "Pronunciation" },
+  "skills.writing": { ru: "Письмо", en: "Writing" },
+  "skills.lvl": { ru: "Ур.", en: "Lvl" },
+  "skills.easiestGoal": { ru: "⚡ Ближайшая цель", en: "⚡ Easiest goal" },
+  "skills.tipTitle": { ru: "Совет дня", en: "Tip of the day" },
+  "skills.tipDesc": { ru: "Сфокусируйтесь на навыке с отметкой «Ближайшая цель» — он ближе всего к повышению уровня. Маленькие победы мотивируют продолжать!", en: "Focus on the skill marked 'Easiest goal' — it's closest to leveling up. Small wins keep you motivated!" },
+
+  // Mood / Energy
+  "mood.title": { ru: "Как вы себя чувствуете?", en: "How are you feeling?" },
+  "mood.subtitle": { ru: "Мы подстроим сложность под ваше состояние", en: "We'll adapt difficulty to your current state" },
+  "mood.peak": { ru: "На пике! 🔥", en: "Peak energy! 🔥" },
+  "mood.normal": { ru: "Нормально 😊", en: "Feeling good 😊" },
+  "mood.tired": { ru: "Устал 😴", en: "A bit tired 😴" },
+  "mood.exhausted": { ru: "Без сил 🥱", en: "Exhausted 🥱" },
+  "mood.recommendation.peak": { ru: "Отлично! Время для сложных заданий — грамматика или дебаты.", en: "Great! Time for challenging tasks — grammar quests or debates." },
+  "mood.recommendation.normal": { ru: "Хороший настрой! Попробуйте свободный диалог или новые слова.", en: "Good mood! Try a free conversation or learn new words." },
+  "mood.recommendation.tired": { ru: "Не перегружайтесь. Лёгкие карточки со словами или короткое видео.", en: "Take it easy. Light vocab cards or a short video." },
+  "mood.recommendation.exhausted": { ru: "Отдохните! Послушайте лёгкое аудио или повторите знакомые слова.", en: "Rest up! Listen to easy audio or review familiar words." },
 } as const;
 
 type TranslationKey = keyof typeof t;

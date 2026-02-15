@@ -1,21 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { Bell, Menu, X, Home, MessageCircle, BookOpen, Headphones, Gamepad2, Mic, PenLine, Settings, Zap } from "lucide-react";
+import { Bell, Menu, X, Home, MessageCircle, BookOpen, Headphones, Gamepad2, Mic, PenLine, Settings, Zap, Map } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useEnergy } from "@/contexts/EnergyContext";
+import EnergyIndicator from "./EnergyIndicator";
+import MoodCheckDialog from "./MoodCheckDialog";
 
 export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [moodOpen, setMoodOpen] = useState(false);
   const { tr } = useLanguage();
+  const { moodChecked } = useEnergy();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Show mood check on first visit
+  useEffect(() => {
+    if (!moodChecked) {
+      const timer = setTimeout(() => setMoodOpen(true), 800);
+      return () => clearTimeout(timer);
+    }
+  }, [moodChecked]);
 
   const mainNav = [
     { title: tr("nav.home"), url: "/", icon: Home },
     { title: tr("nav.freeConversation"), url: "/setup", icon: MessageCircle },
     { title: tr("nav.vocabulary"), url: "/vocabulary", icon: BookOpen },
     { title: tr("nav.listeningLab"), url: "/listening", icon: Headphones },
+    { title: tr("nav.skillMap"), url: "/skills", icon: Map },
   ];
 
   const extraNav = [
@@ -38,12 +52,11 @@ export default function AppLayout() {
           <AppSidebar />
         </div>
 
-        {/* Mobile / Tablet burger menu overlay */}
+        {/* Mobile burger menu overlay */}
         {mobileOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
             <nav className="absolute left-0 top-0 bottom-0 w-72 bg-card shadow-2xl animate-in slide-in-from-left duration-200 flex flex-col">
-              {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0">
@@ -56,7 +69,6 @@ export default function AppLayout() {
                 </button>
               </div>
 
-              {/* Nav sections */}
               <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">{tr("nav.learn")}</p>
@@ -66,9 +78,7 @@ export default function AppLayout() {
                         key={item.url}
                         onClick={() => handleNav(item.url)}
                         className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                          isActive(item.url)
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "text-foreground hover:bg-muted"
+                          isActive(item.url) ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"
                         }`}
                       >
                         <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
@@ -86,9 +96,7 @@ export default function AppLayout() {
                         key={item.url}
                         onClick={() => handleNav(item.url)}
                         className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                          isActive(item.url)
-                            ? "bg-primary/10 text-primary font-medium"
-                            : "text-foreground hover:bg-muted"
+                          isActive(item.url) ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"
                         }`}
                       >
                         <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
@@ -99,14 +107,11 @@ export default function AppLayout() {
                 </div>
               </div>
 
-              {/* Settings at bottom */}
               <div className="p-3 border-t border-border">
                 <button
                   onClick={() => handleNav("/settings")}
                   className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                    isActive("/settings")
-                      ? "bg-primary/10 text-primary font-medium"
-                      : "text-foreground hover:bg-muted"
+                    isActive("/settings") ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"
                   }`}
                 >
                   <Settings size={18} strokeWidth={1.6} className="shrink-0" />
@@ -129,6 +134,7 @@ export default function AppLayout() {
               <span className="font-heading font-semibold text-foreground text-sm tracking-tight">LinguaAI</span>
             </div>
             <div className="flex items-center gap-2">
+              <EnergyIndicator onClick={() => setMoodOpen(true)} />
               <button className="relative p-2 rounded-lg hover:bg-muted transition-colors">
                 <Bell size={18} strokeWidth={1.5} className="text-muted-foreground" />
                 <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
@@ -143,6 +149,8 @@ export default function AppLayout() {
           </main>
         </div>
       </div>
+
+      <MoodCheckDialog open={moodOpen} onClose={() => setMoodOpen(false)} />
     </SidebarProvider>
   );
 }

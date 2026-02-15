@@ -1,4 +1,4 @@
-import { Home, MessageCircle, BookOpen, Settings, Headphones, Gamepad2, Mic, PenLine, Zap } from "lucide-react";
+import { Home, MessageCircle, BookOpen, Settings, Headphones, Gamepad2, Mic, PenLine, Zap, Map } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -23,6 +23,7 @@ export function AppSidebar() {
     { title: tr("nav.freeConversation"), url: "/setup", icon: MessageCircle },
     { title: tr("nav.vocabulary"), url: "/vocabulary", icon: BookOpen },
     { title: tr("nav.listeningLab"), url: "/listening", icon: Headphones },
+    { title: tr("nav.skillMap"), url: "/skills", icon: Map },
   ];
 
   const extraNav = [

@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Flame, Clock, Target, TrendingUp } from "lucide-react";
+import { ArrowRight, Flame, Clock, Target, TrendingUp, Map } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { motion, type Variants } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useEnergy } from "@/contexts/EnergyContext";
 
 const container: Variants = {
   hidden: {},
@@ -16,6 +17,7 @@ const item: Variants = {
 const HomePage = () => {
   const navigate = useNavigate();
   const { tr } = useLanguage();
+  const { energy, moodChecked } = useEnergy();
 
   const stats = [
     { icon: Flame, label: tr("home.streak"), value: tr("home.streakValue"), color: "text-warning" },
@@ -36,6 +38,15 @@ const HomePage = () => {
         <h1 className="text-2xl md:text-3xl font-bold text-foreground font-heading tracking-tight">{tr("home.greeting")}</h1>
         <p className="text-muted-foreground text-sm md:text-base">{tr("home.subtitle")}</p>
       </motion.div>
+
+      {/* Adaptive energy recommendation */}
+      {moodChecked && energy !== "normal" && (
+        <motion.div variants={item}>
+          <Card className={`p-4 rounded-xl border shadow-sm ${energy === "peak" ? "bg-success/5 border-success/10" : energy === "tired" ? "bg-warning/5 border-warning/10" : "bg-muted/50 border-border"}`}>
+            <p className="text-sm text-muted-foreground">{tr(`mood.recommendation.${energy}` as any)}</p>
+          </Card>
+        </motion.div>
+      )}
 
       <motion.div variants={item} className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (
@@ -73,6 +84,20 @@ const HomePage = () => {
           <div className="flex-1 min-w-0">
             <h2 className="font-bold text-foreground font-heading">{tr("home.continueConversation")}</h2>
             <p className="text-sm text-muted-foreground mt-1">{tr("home.continueDesc")}</p>
+          </div>
+          <ArrowRight size={18} strokeWidth={1.6} className="text-muted-foreground shrink-0" />
+        </Card>
+      </motion.div>
+
+      {/* Skill Map shortcut */}
+      <motion.div variants={item}>
+        <Card onClick={() => navigate("/skills")} className="card-hover cursor-pointer p-5 md:p-6 bg-card shadow-sm rounded-xl flex items-center gap-5">
+          <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center shrink-0">
+            <Map size={22} className="text-accent" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-bold text-foreground font-heading">{tr("skills.title")}</h2>
+            <p className="text-sm text-muted-foreground mt-1">{tr("skills.subtitle")}</p>
           </div>
           <ArrowRight size={18} strokeWidth={1.6} className="text-muted-foreground shrink-0" />
         </Card>
