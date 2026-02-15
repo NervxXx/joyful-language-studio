@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { EnergyProvider } from "@/contexts/EnergyContext";
 import AppLayout from "./components/AppLayout";
 import HomePage from "./pages/HomePage";
 import SetupPage from "./pages/SetupPage";
@@ -15,6 +16,7 @@ import SettingsPage from "./pages/SettingsPage";
 import GrammarQuestPage from "./pages/GrammarQuestPage";
 import PronunciationPage from "./pages/PronunciationPage";
 import WritingMentorPage from "./pages/WritingMentorPage";
+import SkillMapPage from "./pages/SkillMapPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,27 +24,30 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route element={<AppLayout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/setup" element={<SetupPage />} />
-              <Route path="/vocabulary" element={<VocabularyPage />} />
-              <Route path="/listening" element={<ListeningPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
-              <Route path="/grammar" element={<GrammarQuestPage />} />
-              <Route path="/pronunciation" element={<PronunciationPage />} />
-              <Route path="/writing" element={<WritingMentorPage />} />
-            </Route>
-            <Route path="/chat" element={<ChatPage />} />
-            <Route path="/vocabulary-chat" element={<VocabularyChatPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <EnergyProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route element={<AppLayout />}>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/setup" element={<SetupPage />} />
+                <Route path="/vocabulary" element={<VocabularyPage />} />
+                <Route path="/listening" element={<ListeningPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/grammar" element={<GrammarQuestPage />} />
+                <Route path="/pronunciation" element={<PronunciationPage />} />
+                <Route path="/writing" element={<WritingMentorPage />} />
+                <Route path="/skills" element={<SkillMapPage />} />
+              </Route>
+              <Route path="/chat" element={<ChatPage />} />
+              <Route path="/vocabulary-chat" element={<VocabularyChatPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </EnergyProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );
