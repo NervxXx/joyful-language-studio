@@ -1,13 +1,35 @@
 import { useState } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "./AppSidebar";
-import { Bell, Menu, X } from "lucide-react";
+import { Bell, Menu, X, Home, MessageCircle, BookOpen, Headphones, Gamepad2, Mic, PenLine, Settings, Zap } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { tr } = useLanguage();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const mainNav = [
+    { title: tr("nav.home"), url: "/", icon: Home },
+    { title: tr("nav.freeConversation"), url: "/setup", icon: MessageCircle },
+    { title: tr("nav.vocabulary"), url: "/vocabulary", icon: BookOpen },
+    { title: tr("nav.listeningLab"), url: "/listening", icon: Headphones },
+  ];
+
+  const extraNav = [
+    { title: tr("nav.grammarQuest"), url: "/grammar", icon: Gamepad2 },
+    { title: tr("nav.pronunciation"), url: "/pronunciation", icon: Mic },
+    { title: tr("nav.writingMentor"), url: "/writing", icon: PenLine },
+  ];
+
+  const handleNav = (url: string) => {
+    navigate(url);
+    setMobileOpen(false);
+  };
+
+  const isActive = (url: string) => url === "/" ? location.pathname === "/" : location.pathname.startsWith(url);
 
   return (
     <SidebarProvider>
@@ -16,18 +38,82 @@ export default function AppLayout() {
           <AppSidebar />
         </div>
 
+        {/* Mobile / Tablet burger menu overlay */}
         {mobileOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-            <div className="absolute left-0 top-0 bottom-0 w-72 bg-card shadow-xl animate-in slide-in-from-left duration-200">
+            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+            <nav className="absolute left-0 top-0 bottom-0 w-72 bg-card shadow-2xl animate-in slide-in-from-left duration-200 flex flex-col">
+              {/* Header */}
               <div className="flex items-center justify-between p-4 border-b border-border">
-                <span className="font-heading font-semibold text-foreground">{tr("nav.menu")}</span>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0">
+                    <Zap size={15} className="text-primary-foreground" />
+                  </div>
+                  <span className="font-heading font-bold text-foreground text-base tracking-tight">LinguaAI</span>
+                </div>
                 <button onClick={() => setMobileOpen(false)} className="p-2 rounded-lg hover:bg-muted transition-colors">
                   <X size={18} className="text-muted-foreground" />
                 </button>
               </div>
-              <AppSidebar />
-            </div>
+
+              {/* Nav sections */}
+              <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">{tr("nav.learn")}</p>
+                  <div className="space-y-1">
+                    {mainNav.map((item) => (
+                      <button
+                        key={item.url}
+                        onClick={() => handleNav(item.url)}
+                        className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                          isActive(item.url)
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-foreground hover:bg-muted"
+                        }`}
+                      >
+                        <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
+                        <span>{item.title}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-2">{tr("nav.more")}</p>
+                  <div className="space-y-1">
+                    {extraNav.map((item) => (
+                      <button
+                        key={item.url}
+                        onClick={() => handleNav(item.url)}
+                        className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                          isActive(item.url)
+                            ? "bg-primary/10 text-primary font-medium"
+                            : "text-foreground hover:bg-muted"
+                        }`}
+                      >
+                        <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
+                        <span>{item.title}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Settings at bottom */}
+              <div className="p-3 border-t border-border">
+                <button
+                  onClick={() => handleNav("/settings")}
+                  className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm transition-colors ${
+                    isActive("/settings")
+                      ? "bg-primary/10 text-primary font-medium"
+                      : "text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Settings size={18} strokeWidth={1.6} className="shrink-0" />
+                  <span>{tr("nav.settings")}</span>
+                </button>
+              </div>
+            </nav>
           </div>
         )}
 
