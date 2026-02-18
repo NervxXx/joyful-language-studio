@@ -17,6 +17,7 @@ import GrammarQuestPage from "./pages/GrammarQuestPage";
 import PronunciationPage from "./pages/PronunciationPage";
 import WritingMentorPage from "./pages/WritingMentorPage";
 import SkillMapPage from "./pages/SkillMapPage";
+import SubscriptionPage from "./pages/SubscriptionPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,7 @@ const App = () => (
                 <Route path="/pronunciation" element={<PronunciationPage />} />
                 <Route path="/writing" element={<WritingMentorPage />} />
                 <Route path="/skills" element={<SkillMapPage />} />
+                <Route path="/subscription" element={<SubscriptionPage />} />
               </Route>
               <Route path="/chat" element={<ChatPage />} />
               <Route path="/vocabulary-chat" element={<VocabularyChatPage />} />

@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Globe, Bell, Volume2, Moon, User, Palette, Shield, KeyRound,
-  LogOut, Trash2, Download, Eye, EyeOff, ChevronRight, Smartphone, Mail,
+  LogOut, Trash2, Download, Eye, EyeOff, ChevronRight, Smartphone, Mail, CreditCard,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "@/hooks/use-toast";
@@ -21,6 +22,7 @@ const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transiti
 
 const SettingsPage = () => {
   const { lang, setLang, tr } = useLanguage();
+  const navigate = useNavigate();
   const [name, setName] = useState("Алекс");
   const [email] = useState("alex@example.com");
   const [notifications, setNotifications] = useState(true);
@@ -103,6 +105,25 @@ const SettingsPage = () => {
             <label className="text-sm font-medium text-muted-foreground">{tr("settings.dailyGoal")}</label>
             <Input type="number" value={dailyGoal} onChange={(e) => setDailyGoal(e.target.value)} className="h-12 bg-background border-border rounded-xl w-36 text-base md:text-sm" />
           </div>
+        </Card>
+      </motion.section>
+
+      {/* Subscription */}
+      <motion.section variants={item} className="space-y-3">
+        <h2 className="section-heading flex items-center gap-2"><CreditCard size={13} /> {tr("settings.subscription")}</h2>
+        <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl">
+          <button onClick={() => navigate("/subscription")} className="w-full flex items-center justify-between group">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <CreditCard size={16} className="text-primary" />
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-semibold text-foreground">{tr("settings.subscriptionDesc")}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.currentPlan")}</p>
+              </div>
+            </div>
+            <ChevronRight size={16} className="text-muted-foreground group-hover:translate-x-0.5 transition-transform" />
+          </button>
         </Card>
       </motion.section>
 
