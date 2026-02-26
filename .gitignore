@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build
+frontend/dist/
+*.pyc
+__pycache__/
+.pytest_cache/
+
+# Env & secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Other
+Epochal Dialog*/

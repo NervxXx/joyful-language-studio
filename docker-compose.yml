@@ -1,0 +1,44 @@
+services:
+  postgresql:
+    image: postgres:16-alpine
+    container_name: english_studio_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-english_studio}
+      POSTGRES_USER: ${DB_USER:-english_studio_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init_postgresql.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-english_studio_user} -d ${DB_NAME:-english_studio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - english_studio_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: english_studio_redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - english_studio_network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  english_studio_network:
+    driver: bridge
