@@ -16,6 +16,7 @@ import VocabularyPage from "./pages/VocabularyPage";
 import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 import { RedirectToChat } from "./components/RedirectToChat";
+import { GoogleOAuthWrapper } from "./components/auth/GoogleOAuthWrapper";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +38,7 @@ const App = () => (
                 <Route path="/settings" element={<SettingsPage />} />
               </Route>
               <Route path="/vocabulary-chat" element={<RedirectToChat />} />
-              <Route path="/login" element={<LoginPage />} />
+              <Route path="/login" element={<GoogleOAuthWrapper><LoginPage /></GoogleOAuthWrapper>} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

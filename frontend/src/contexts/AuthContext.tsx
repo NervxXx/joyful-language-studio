@@ -13,6 +13,7 @@ type User = {
   username: string;
   full_name: string | null;
   email: string;
+  avatar_url?: string | null;
   daily_goal_minutes?: number;
   notifications_enabled?: boolean;
   sound_enabled?: boolean;
@@ -22,6 +23,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginWithGoogle: (credential: string, clientId?: string) => Promise<void>;
   logout: () => Promise<void>;
   refetchUser: () => Promise<void>;
 }
@@ -30,6 +32,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   isLoading: true,
   login: async () => {},
+  loginWithGoogle: async () => {},
   logout: async () => {},
   refetchUser: async () => {},
 });
@@ -60,6 +63,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [refetchUser]
   );
 
+  const loginWithGoogle = useCallback(
+    async (credential: string, clientId?: string) => {
+      const res = await api.loginWithGoogle(credential, clientId);
+      const me = await api.me();
+      if (me) {
+        if (!me.avatar_url && res.user?.avatar_url) {
+          (me as User).avatar_url = res.user.avatar_url;
+        }
+        setUser(me as User);
+      }
+    },
+    []
+  );
+
   const logout = useCallback(async () => {
     await api.logout();
     setUser(null);
@@ -67,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, logout, refetchUser }}
+      value={{ user, isLoading, login, loginWithGoogle, logout, refetchUser }}
     >
       {children}
     </AuthContext.Provider>

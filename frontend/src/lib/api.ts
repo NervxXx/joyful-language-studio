@@ -79,6 +79,12 @@ export const api = {
     });
   },
 
+  loginWithGoogle: (credential: string, clientId?: string) =>
+    request<{ access_token: string; user: { full_name: string; avatar_url?: string } }>("/auth/google", {
+      method: "POST",
+      body: JSON.stringify({ credential, client_id: clientId }),
+    }),
+
   logout: () =>
     fetch(`${API_BASE}/auth/logout`, { method: "POST", credentials: "include" }),
 

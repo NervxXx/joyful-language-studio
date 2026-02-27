@@ -6,9 +6,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 import { Zap, LogIn } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
+import { hasGoogleAuth } from "@/components/auth/GoogleOAuthWrapper";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const { tr } = useLanguage();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -30,9 +32,24 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: { credential?: string; clientId?: string }) => {
+    if (!credentialResponse.credential) return;
+    setError("");
+    setLoading(true);
+    try {
+      await loginWithGoogle(credentialResponse.credential, credentialResponse.clientId);
+      navigate("/");
+    } catch (err: unknown) {
+      setError((err as Error).message || "Ошибка входа через Google");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const showGoogle = hasGoogleAuth();
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-background relative overflow-hidden">
-      {/* Seamless adaptive background */}
       <div className="bg-decoration">
         <div className="bg-blob bg-blob-1" />
         <div className="bg-blob bg-blob-2" />
@@ -58,7 +75,6 @@ export default function LoginPage() {
         className="w-full max-w-md relative z-10"
       >
         <div className="glass-card p-8 md:p-10 space-y-7">
-          {/* Logo */}
           <div className="flex flex-col items-center gap-3 mb-2">
             <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center shadow-glow-blue">
               <Zap size={24} className="text-primary-foreground" />
@@ -109,14 +125,42 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border/50" />
+          {showGoogle && (
+            <>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-border/50" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="px-3 text-muted-foreground" style={{ background: "var(--glass-bg, hsl(var(--background)))" }}>или</span>
+                </div>
+              </div>
+
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setError("Не удалось войти через Google")}
+                  shape="pill"
+                  theme="outline"
+                  size="large"
+                  width="100%"
+                  text="signin_with"
+                  locale="ru"
+                />
+              </div>
+            </>
+          )}
+
+          {!showGoogle && (
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border/50" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="px-3 text-muted-foreground" style={{ background: "var(--glass-bg, hsl(var(--background)))" }}>или</span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="px-3 text-muted-foreground" style={{ background: "var(--glass-bg)" }}>или</span>
-            </div>
-          </div>
+          )}
 
           <p className="text-sm text-muted-foreground text-center">
             Нет аккаунта?{" "}
