@@ -127,7 +127,7 @@ export function VocabularyEditSheet({ open, onOpenChange }: VocabularyEditSheetP
           <section className="space-y-2">
             <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{tr("vocab.activeDict")}</h3>
             <div
-              className="flex flex-col gap-2 min-h-[80px] max-h-[200px] overflow-y-auto p-2 rounded-lg border-2 border-dashed border-primary/20 bg-primary/5"
+              className="flex flex-col gap-2 min-h-[80px] max-h-[200px] overflow-y-auto p-2 rounded-lg border-2 border-dashed border-primary/20 bg-muted/20"
               onDragOver={(e) => { e.preventDefault(); setDragOverList("active"); setDragOverId(null); }}
               onDrop={() => onDropToList("active")}
             >

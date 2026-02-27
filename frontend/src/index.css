@@ -490,10 +490,7 @@
     background: linear-gradient(135deg, hsl(272 55% 58%), hsl(290 50% 62%));
   }
 
-  .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background: linear-gradient(135deg, hsl(272 55% 52%), hsl(290 50% 58%));
-  }
+
 
   .gradient-soft {
     background: linear-gradient(135deg, hsl(272 30% 96%), hsl(300 25% 96%));

@@ -202,7 +202,7 @@ export function AppSidebar() {
                 <div className="flex justify-center px-3">
                   <button
                     onClick={() => navigate("/setup")}
-                    className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-sm transition-colors"
+                    className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl hover:bg-muted text-primary font-semibold text-sm transition-colors"
                   >
                     <Plus size={18} strokeWidth={2} />
                     {tr("setup.title")}
@@ -217,7 +217,7 @@ export function AppSidebar() {
               <div className="flex justify-center px-2 mb-3">
                 <button
                   onClick={() => navigate("/setup")}
-                  className="flex items-center justify-center p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
+                  className="flex items-center justify-center p-2.5 rounded-xl hover:bg-muted text-primary transition-colors"
                   title={tr("setup.title")}
                 >
                   <Plus size={18} strokeWidth={2} />
@@ -239,7 +239,7 @@ export function AppSidebar() {
                               className={cn(
                                 "w-full flex items-start gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm transition-colors",
                                 activeConvId === conv.id
-                                  ? "bg-primary/10 text-primary font-medium"
+                                  ? "text-primary font-medium"
                                   : "text-foreground hover:bg-muted"
                               )}
                             >

@@ -303,8 +303,8 @@ const ChatPage = () => {
               <div className="max-w-[75%] space-y-2">
                 <div
                   className={`px-4 py-3 text-[15px] leading-relaxed ${msg.sender === "user"
-                      ? "msg-user"
-                      : "msg-ai text-foreground"
+                    ? "msg-user"
+                    : "msg-ai text-foreground"
                     }`}
                 >
                   {msg.sender === "ai" ? <HoverableMessage text={msg.text} /> : msg.text}
@@ -341,7 +341,7 @@ const ChatPage = () => {
             {activeWords.map((word) => (
               <span
                 key={word}
-                className="shrink-0 px-4 py-1.5 rounded-full bg-primary/8 text-primary text-sm font-medium border border-primary/15"
+                className="shrink-0 px-4 py-1.5 rounded-full text-primary text-sm font-medium border border-primary/40 bg-muted/30"
               >
                 {word}
               </span>
@@ -378,12 +378,12 @@ const ChatPage = () => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={`w-28 h-28 rounded-full flex items-center justify-center transition-all ${micStatus === "listening"
-                ? "gradient-primary text-primary-foreground shadow-glow-blue scale-110"
-                : micStatus === "speaking"
-                  ? "bg-accent text-accent-foreground shadow-glow-purple"
-                  : micStatus === "processing"
-                    ? "bg-muted text-muted-foreground cursor-wait"
-                    : "gradient-primary text-primary-foreground shadow-glow-blue"
+              ? "gradient-primary text-primary-foreground shadow-glow-blue scale-110"
+              : micStatus === "speaking"
+                ? "bg-accent text-accent-foreground shadow-glow-purple"
+                : micStatus === "processing"
+                  ? "bg-muted text-muted-foreground cursor-wait"
+                  : "gradient-primary text-primary-foreground shadow-glow-blue"
               }`}
           >
             {micStatus === "processing" ? (

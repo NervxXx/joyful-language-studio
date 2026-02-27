@@ -218,7 +218,7 @@ const SettingsPage = () => {
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors whitespace-nowrap",
               activeCategory === id
-                ? "bg-primary/10 text-primary"
+                ? "text-primary font-bold"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -250,7 +250,7 @@ const SettingsPage = () => {
                     className={cn(
                       "flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border",
                       theme === value
-                        ? "bg-primary/10 text-primary border-primary/30"
+                        ? "text-primary border-primary shadow-sm"
                         : "bg-muted/50 hover:bg-muted border-transparent"
                     )}
                   >

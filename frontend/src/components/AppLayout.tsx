@@ -148,7 +148,7 @@ export default function AppLayout() {
                       <button
                         key={item.url}
                         onClick={() => handleNav(item.url)}
-                        className={`flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm transition-all ${isActive(item.url) ? "bg-primary/10 text-primary font-medium shadow-soft" : "text-foreground hover:bg-muted/50"
+                        className={`flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm transition-all ${isActive(item.url) ? "text-primary font-medium shadow-soft" : "text-foreground hover:bg-muted/50"
                           }`}
                       >
                         <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
@@ -162,7 +162,7 @@ export default function AppLayout() {
                     <div className="flex justify-center px-3 mb-3">
                       <button
                         onClick={() => handleNav("/setup")}
-                        className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3.5 rounded-2xl bg-primary/10 hover:bg-primary/15 text-primary font-semibold text-sm transition-all hover:shadow-soft"
+                        className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3.5 rounded-2xl hover:bg-muted text-primary font-semibold text-sm transition-all hover:shadow-soft"
                       >
                         <span className="text-lg leading-none">+</span>
                         {tr("setup.title")}
@@ -176,7 +176,7 @@ export default function AppLayout() {
                         <button
                           key={conv.id}
                           onClick={() => handleNav(`/chat?conv=${conv.id}`)}
-                          className={`flex items-center gap-2.5 w-full px-4 py-2.5 rounded-2xl text-left text-sm transition-all ${activeConvId === conv.id ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted/50"
+                          className={`flex items-center gap-2.5 w-full px-4 py-2.5 rounded-2xl text-left text-sm transition-all ${activeConvId === conv.id ? "text-primary font-medium" : "text-foreground hover:bg-muted/50"
                             }`}
                         >
                           {(() => {

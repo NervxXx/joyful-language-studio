@@ -62,7 +62,7 @@ export default function RegisterPage() {
             <div className="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center shadow-glow-blue">
               <Zap size={24} className="text-primary-foreground" />
             </div>
-            <h1 className="text-2xl font-bold font-heading gradient-text">LinguaAI</h1>
+            <h1 className="text-2xl font-bold font-heading text-primary">LinguaAI</h1>
             <p className="text-sm text-muted-foreground">Создайте аккаунт</p>
           </div>
 

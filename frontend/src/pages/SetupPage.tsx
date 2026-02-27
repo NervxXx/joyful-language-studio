@@ -132,7 +132,7 @@ const SetupPage = () => {
       animate="show"
     >
       <motion.div variants={item} className="space-y-1.5">
-        <h1 className="text-2xl md:text-3xl font-bold font-heading tracking-tight gradient-text">
+        <h1 className="text-2xl md:text-3xl font-bold font-heading tracking-tight text-primary">
           {tr("setup.title")}
         </h1>
         <p className="text-muted-foreground text-sm">{tr("setup.subtitle")}</p>
@@ -265,7 +265,7 @@ const SetupPage = () => {
               key={s.key}
               type="button"
               onClick={() => { setContextMode("custom"); setContext(tr(s.key)); }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${context === tr(s.key) ? "bg-primary/10 text-primary border border-primary/30" : "bg-muted/50 hover:bg-muted"
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${context === tr(s.key) ? "text-primary border border-primary/30" : "bg-muted/50 hover:bg-muted"
                 }`}
             >
               {tr(s.key)}
