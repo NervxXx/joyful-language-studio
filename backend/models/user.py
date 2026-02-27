@@ -19,6 +19,7 @@ class UserCreate(SQLModel):
     full_name: Optional[str] = Field(default=None, max_length=100)
     password: str = Field(..., min_length=6, max_length=100)
     username: Optional[str] = Field(default=None, min_length=3, max_length=50)
+    code: Optional[str] = Field(default=None, max_length=6)
 
 
 class UserUpdate(SQLModel):

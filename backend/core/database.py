@@ -7,6 +7,7 @@ from models.user import User
 from models.conversation import Conversation
 from models.message import Message
 from models.vocabulary_word import VocabularyWord, VocabularySet
+from models.verification_code import VerificationCode
 
 logger = logging.getLogger(__name__)
 

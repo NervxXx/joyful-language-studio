@@ -29,8 +29,11 @@ from config import (
     COOKIE_SAMESITE,
     GOOGLE_ALLOWED_CLIENT_IDS,
     GOOGLE_CLIENT_ID,
+    EMAIL_VERIFICATION_REQUIRED,
 )
 from services.auth_protection_service import auth_protection_service
+from services.verification_code_service import verification_code_service
+from models.verification_code import SendCodeRequest
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +47,24 @@ class GoogleAuthRequest(BaseModel):
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register(user_data: UserCreate, db: Session = Depends(get_session)):
+    if EMAIL_VERIFICATION_REQUIRED:
+        if not user_data.code:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Требуется код подтверждения email")
+        if not verification_code_service.verify_code(user_data.email, user_data.code):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Неверный или просроченный код")
     user = create_user(db, user_data)
     return create_user_response(user)
+
+
+@router.post("/send-registration-code")
+def send_registration_code(req: SendCodeRequest, db: Session = Depends(get_session)):
+    existing = get_user_by_email(db, req.email)
+    if existing:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Пользователь с таким email уже зарегистрирован")
+    ok = verification_code_service.send_registration_code(req.email)
+    if not ok:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Не удалось отправить код")
+    return {"success": True, "message": "Код отправлен на email"}
 
 
 @router.post("/login", response_model=Token)

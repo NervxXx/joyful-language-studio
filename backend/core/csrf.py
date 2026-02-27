@@ -7,7 +7,7 @@ from config import ENVIRONMENT
 SAFE_METHODS = ("GET", "HEAD", "OPTIONS", "TRACE")
 CSRF_COOKIE = "csrf_token"
 CSRF_HEADER = "X-CSRF-Token"
-CSRF_EXEMPT = ("/auth/login", "/auth/register", "/auth/google", "/auth/logout")
+CSRF_EXEMPT = ("/auth/login", "/auth/register", "/auth/google", "/auth/logout", "/auth/send-registration-code")
 
 
 class CSRFMiddleware(BaseHTTPMiddleware):

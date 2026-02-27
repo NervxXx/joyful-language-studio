@@ -52,6 +52,9 @@ GOOGLE_ALLOWED_CLIENT_IDS = [
     if cid and cid.strip()
 ]
 
+# Email verification
+EMAIL_VERIFICATION_REQUIRED = os.getenv("EMAIL_VERIFICATION_REQUIRED", "true").lower() == "true"
+
 # Cookies
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", str(ENVIRONMENT == "production")).lower() == "true"
 COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "none" if ENVIRONMENT == "production" else "lax").lower()

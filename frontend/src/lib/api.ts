@@ -106,10 +106,16 @@ export const api = {
   deleteAccount: () =>
     request<{ ok: boolean }>("/auth/me", { method: "DELETE" }),
 
-  register: (email: string, password: string, full_name?: string) =>
+  register: (email: string, password: string, full_name?: string, code?: string) =>
     request<{ id: number; full_name: string }>("/auth/register", {
       method: "POST",
-      body: JSON.stringify({ email, password, full_name }),
+      body: JSON.stringify({ email, password, full_name, code }),
+    }),
+
+  sendRegistrationCode: (email: string) =>
+    request<{ success: boolean; message: string }>("/auth/send-registration-code", {
+      method: "POST",
+      body: JSON.stringify({ email }),
     }),
 
   lookupWord: (word: string) =>

@@ -12,4 +12,5 @@ from .config import (
     GOOGLE_CLIENT_ID,
     COOKIE_SECURE,
     COOKIE_SAMESITE,
+    EMAIL_VERIFICATION_REQUIRED,
 )
