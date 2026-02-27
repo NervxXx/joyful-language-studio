@@ -74,8 +74,6 @@ function SeamlessBackground() {
         </span>
       ))}
 
-      {/* Holographic accent line */}
-      <div className="holo-accent" style={{ position: "absolute", bottom: "30%", left: "5%", right: "5%" }} />
     </>
   );
 }
