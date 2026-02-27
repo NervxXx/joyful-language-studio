@@ -49,7 +49,6 @@ export default function LoginPage() {
         <span className="floating-letter" style={{ bottom: "18%", left: "12%", fontSize: "clamp(1.8rem, 3.5vw, 3rem)", animation: "float-letter 11s ease-in-out 2s infinite" }}>C</span>
         <span className="floating-letter" style={{ bottom: "28%", right: "8%", fontSize: "clamp(1rem, 2vw, 1.8rem)", animation: "float-letter-reverse 8s ease-in-out 0.5s infinite" }}>✦</span>
         <span className="floating-letter" style={{ top: "50%", left: "5%", fontSize: "clamp(0.8rem, 1.5vw, 1.3rem)", animation: "float-letter 7s ease-in-out 3s infinite" }}>◇</span>
-        <div className="holo-accent" style={{ position: "absolute", bottom: "40%", left: "10%", right: "10%" }} />
       </div>
 
       <motion.div

@@ -47,7 +47,6 @@ export default function RegisterPage() {
         <span className="floating-letter" style={{ top: "10%", right: "12%", fontSize: "clamp(2rem, 4vw, 3.5rem)", animation: "float-letter 9s ease-in-out infinite" }}>A</span>
         <span className="floating-letter" style={{ bottom: "15%", left: "8%", fontSize: "clamp(1.6rem, 3vw, 2.5rem)", animation: "float-letter-reverse 10s ease-in-out 1s infinite" }}>B</span>
         <span className="floating-letter" style={{ top: "38%", left: "6%", fontSize: "clamp(1rem, 2vw, 1.6rem)", animation: "float-letter 8s ease-in-out 2s infinite" }}>◇</span>
-        <div className="holo-accent" style={{ position: "absolute", bottom: "35%", left: "8%", right: "8%" }} />
       </div>
 
       <motion.div

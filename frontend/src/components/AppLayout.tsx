@@ -8,6 +8,69 @@ import { AppSidebar } from "./AppSidebar";
 import { Menu, X, Home, BookOpen, Headphones, MessageCircle, Settings, Zap } from "lucide-react";
 import { COACH_ICONS } from "@/lib/coachTypes";
 import { useLanguage } from "@/contexts/LanguageContext";
+
+function SeamlessBackground() {
+  const letters = [
+    { char: "A", top: "10%", left: "7%", size: "clamp(1.6rem, 3vw, 2.8rem)", delay: "0s", dur: "8s" },
+    { char: "B", top: "16%", right: "10%", size: "clamp(1.2rem, 2.2vw, 2rem)", delay: "1.2s", dur: "10s" },
+    { char: "英", top: "52%", left: "4%", size: "clamp(1.3rem, 2.5vw, 2.2rem)", delay: "2.5s", dur: "9s" },
+    { char: "C", bottom: "18%", right: "7%", size: "clamp(1.4rem, 2.8vw, 2.4rem)", delay: "0.8s", dur: "11s" },
+    { char: "✦", top: "33%", right: "4%", size: "clamp(0.8rem, 1.4vw, 1.3rem)", delay: "3.5s", dur: "7s" },
+    { char: "◇", bottom: "32%", left: "9%", size: "clamp(1rem, 1.8vw, 1.6rem)", delay: "1.8s", dur: "9s" },
+    { char: "★", top: "70%", right: "15%", size: "clamp(0.7rem, 1.2vw, 1.1rem)", delay: "4s", dur: "8s" },
+  ];
+
+  const particles = [
+    { cls: "bg-particle--sm", top: "15%", left: "20%", delay: "0s" },
+    { cls: "bg-particle--md", top: "40%", right: "12%", delay: "1.5s" },
+    { cls: "bg-particle--lg", bottom: "25%", left: "35%", delay: "0.8s" },
+    { cls: "bg-particle--sm", top: "60%", right: "30%", delay: "2.2s" },
+    { cls: "bg-particle--md", bottom: "40%", right: "45%", delay: "3s" },
+    { cls: "bg-particle--sm", top: "25%", left: "55%", delay: "1s" },
+    { cls: "bg-particle--lg", bottom: "15%", right: "18%", delay: "2.8s" },
+    { cls: "bg-particle--sm", top: "75%", left: "12%", delay: "3.5s" },
+  ];
+
+  return (
+    <>
+      <div className="bg-blob bg-blob-1" />
+      <div className="bg-blob bg-blob-2" />
+      <div className="bg-blob bg-blob-3" />
+      <div className="bg-blob bg-blob-4" />
+      <div className="bg-blob bg-blob-5" />
+      {particles.map((p, i) => (
+        <div
+          key={`p-${i}`}
+          className={`bg-particle ${p.cls}`}
+          style={{
+            top: p.top,
+            left: (p as { left?: string }).left,
+            right: (p as { right?: string }).right,
+            bottom: (p as { bottom?: string }).bottom,
+            animationDelay: p.delay,
+          }}
+        />
+      ))}
+      {letters.map((l, i) => (
+        <span
+          key={`l-${i}`}
+          className="floating-letter"
+          style={{
+            top: l.top,
+            left: (l as { left?: string }).left,
+            right: (l as { right?: string }).right,
+            bottom: (l as { bottom?: string }).bottom,
+            fontSize: l.size,
+            animation: `${i % 2 === 0 ? "float-letter" : "float-letter-reverse"} ${l.dur} ease-in-out ${l.delay} infinite`,
+          }}
+        >
+          {l.char}
+        </span>
+      ))}
+    </>
+  );
+}
+
 export default function AppLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { tr } = useLanguage();
@@ -42,7 +105,11 @@ export default function AppLayout() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
+        <div className="min-h-screen flex w-full relative">
+          <div className="bg-decoration">
+            <SeamlessBackground />
+          </div>
+
         <div className="hidden lg:block">
           <AppSidebar />
         </div>
