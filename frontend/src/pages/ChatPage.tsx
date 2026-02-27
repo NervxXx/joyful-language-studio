@@ -281,47 +281,49 @@ const ChatPage = () => {
       />
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 md:px-6 py-6 space-y-5 max-w-3xl mx-auto w-full min-h-0">
-        {loadingHistory ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 size={24} className="animate-spin text-primary/50" />
-          </div>
-        ) : (
-          messages.map((msg, i) => (
-            <motion.div
-              key={msg.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: i * 0.04 }}
-              className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
-            >
-              {msg.sender === "ai" && (
-                <div className="w-8 h-8 rounded-2xl icon-bubble flex items-center justify-center shrink-0 mt-1 text-base !w-8 !h-8">
-                  {avatar ? avatar : <HeaderIcon size={16} strokeWidth={1.6} className="text-muted-foreground" />}
-                </div>
-              )}
-              <div className="max-w-[75%] space-y-2">
-                <div
-                  className={`px-4 py-3 text-[15px] leading-relaxed ${msg.sender === "user"
-                    ? "msg-user"
-                    : "msg-ai text-foreground"
-                    }`}
-                >
-                  {msg.sender === "ai" ? <HoverableMessage text={msg.text} /> : msg.text}
-                </div>
-                {msg.correction && (
-                  <Card className="p-3 glass-card !rounded-xl text-xs space-y-1 border-primary/10">
-                    <p className="font-medium text-foreground">
-                      <span className="line-through text-destructive/70">{msg.correction.wrong}</span> →{" "}
-                      <span className="text-primary font-semibold">{msg.correction.right}</span>
-                    </p>
-                    <p className="text-muted-foreground leading-relaxed">{msg.correction.reason}</p>
-                  </Card>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto w-full min-h-0">
+        <div className="px-4 md:px-6 py-6 space-y-5 max-w-3xl mx-auto w-full">
+          {loadingHistory ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 size={24} className="animate-spin text-primary/50" />
+            </div>
+          ) : (
+            messages.map((msg, i) => (
+              <motion.div
+                key={msg.id}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: i * 0.04 }}
+                className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
+              >
+                {msg.sender === "ai" && (
+                  <div className="w-8 h-8 rounded-2xl icon-bubble flex items-center justify-center shrink-0 mt-1 text-base !w-8 !h-8">
+                    {avatar ? avatar : <HeaderIcon size={16} strokeWidth={1.6} className="text-muted-foreground" />}
+                  </div>
                 )}
-              </div>
-            </motion.div>
-          ))
-        )}
+                <div className="max-w-[75%] space-y-2">
+                  <div
+                    className={`px-4 py-3 text-[15px] leading-relaxed ${msg.sender === "user"
+                      ? "msg-user"
+                      : "msg-ai text-foreground"
+                      }`}
+                  >
+                    {msg.sender === "ai" ? <HoverableMessage text={msg.text} /> : msg.text}
+                  </div>
+                  {msg.correction && (
+                    <Card className="p-3 glass-card !rounded-xl text-xs space-y-1 border-primary/10">
+                      <p className="font-medium text-foreground">
+                        <span className="line-through text-destructive/70">{msg.correction.wrong}</span> →{" "}
+                        <span className="text-primary font-semibold">{msg.correction.right}</span>
+                      </p>
+                      <p className="text-muted-foreground leading-relaxed">{msg.correction.reason}</p>
+                    </Card>
+                  )}
+                </div>
+              </motion.div>
+            ))
+          )}
+        </div>
       </div>
 
       {/* Vocab panel */}
