@@ -16,12 +16,18 @@ conv_service = ConversationService()
 llm_service = LangChainService()
 
 
+ALLOWED_COACH_TYPES = {"friendly", "strict", "calm", "humorous", "patient", "motivating", "professional", "casual", "neutral", "custom"}
+
+
 class CreateChatRequest(BaseModel):
     title: str = "New Chat"
     avatar: Optional[str] = None
     coach_type: str = "friendly"
     context: Optional[str] = None
     explain_lang: Optional[str] = "ru"
+
+    class Config:
+        str_strip_whitespace = True
 
 
 @router.post("/chat/new")
@@ -30,15 +36,21 @@ def create_chat(
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_session),
 ):
+    title = (body.title or "New Chat").strip()[:200]
+    avatar = (body.avatar or "").strip()[:10] or None
+    coach_type = body.coach_type.strip().lower() if body.coach_type else "friendly"
+    if coach_type not in ALLOWED_COACH_TYPES:
+        coach_type = "friendly"
+    context = (body.context or "").strip()[:2000] or None
     explain_lang = (body.explain_lang or "ru").strip().lower()
     if explain_lang not in ("ru", "en"):
         explain_lang = "ru"
     conv = conv_service.create_conversation(
         current_user.id,
-        title=body.title,
-        avatar=body.avatar,
-        coach_type=body.coach_type,
-        context=body.context,
+        title=title,
+        avatar=avatar,
+        coach_type=coach_type,
+        context=context,
         explain_lang=explain_lang,
     )
     db.add(conv)
@@ -111,8 +123,8 @@ async def send_message(
             explain_lang=explain_lang,
             vocab_words=vocab_words or None,
         )
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Ошибка AI: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Сервис временно недоступен. Попробуйте позже.")
 
     agent_text = ai_resp.get("text", "Извините, не удалось сгенерировать ответ.")
     correction = ai_resp.get("correction") or {}
@@ -192,6 +204,9 @@ class UpdateConversationRequest(BaseModel):
     context: Optional[str] = None
     explain_lang: Optional[str] = None
 
+    class Config:
+        str_strip_whitespace = True
+
 
 @router.patch("/conversations/{conversation_id}")
 def update_conversation(
@@ -215,6 +230,12 @@ def update_conversation(
             "coach_type": conv.coach_type,
             "explain_lang": getattr(conv, "explain_lang", None) or "ru",
         }
+    patch_title = body.title[:200] if body.title else body.title
+    patch_avatar = body.avatar[:10] if body.avatar else body.avatar
+    patch_context = body.context[:2000] if body.context else body.context
+    patch_coach = body.coach_type.strip().lower() if body.coach_type else body.coach_type
+    if patch_coach and patch_coach not in ALLOWED_COACH_TYPES:
+        patch_coach = "friendly"
     explain_lang = body.explain_lang
     if explain_lang is not None:
         explain_lang = (explain_lang or "ru").strip().lower()
@@ -223,11 +244,11 @@ def update_conversation(
     updated = conv_service.update_conversation(
         db,
         conversation_id,
-        title=body.title,
-        avatar=body.avatar,
+        title=patch_title,
+        avatar=patch_avatar,
         is_pinned=body.is_pinned,
-        coach_type=body.coach_type,
-        context=body.context,
+        coach_type=patch_coach,
+        context=patch_context,
         explain_lang=explain_lang,
     )
     if not updated:

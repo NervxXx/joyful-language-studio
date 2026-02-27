@@ -17,6 +17,12 @@ LOWERCASE_PATTERN = re.compile(r'[a-z]')
 DIGIT_PATTERN = re.compile(r'\d')
 SPECIAL_PATTERN = re.compile(r'[!@#$%^&*(),.?":{}|<>]')
 
+COMMON_PASSWORDS = {
+    "password", "password1", "12345678", "123456789", "qwerty123",
+    "qwerty", "abc12345", "abc123456", "iloveyou", "admin123",
+    "letmein1", "welcome1", "monkey123", "dragon123",
+}
+
 
 def validate_password_strength(password: str) -> Tuple[bool, Optional[str]]:
     if len(password) < MIN_PASSWORD_LENGTH:
@@ -31,8 +37,7 @@ def validate_password_strength(password: str) -> Tuple[bool, Optional[str]]:
         return False, "Пароль должен содержать хотя бы одну цифру"
     if REQUIRE_SPECIAL and not SPECIAL_PATTERN.search(password):
         return False, "Пароль должен содержать хотя бы один специальный символ"
-    common = ["password", "password1", "12345678", "qwerty", "abc123"]
-    if password.lower() in common:
+    if password.lower() in COMMON_PASSWORDS:
         return False, "Пароль слишком простой"
     return True, None
 
@@ -44,4 +49,12 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Frame-Options"] = "DENY"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'none'; "
+            "script-src 'none'; "
+            "frame-ancestors 'none';"
+        )
+        if ENVIRONMENT == "production":
+            response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
         return response

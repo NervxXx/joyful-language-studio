@@ -19,12 +19,20 @@ except Exception:
     USE_REDIS = False
 
 
+def _get_client_ip(request: Request) -> str:
+    """Get real client IP, respecting X-Forwarded-For from trusted proxies."""
+    forwarded_for = request.headers.get("X-Forwarded-For")
+    if forwarded_for:
+        # Take the leftmost (original client) IP
+        ip = forwarded_for.split(",")[0].strip()
+        if ip:
+            return ip
+    return request.client.host if request.client else "unknown"
+
+
 class RateLimiter:
     def __init__(self):
         self.requests: Dict[str, list] = defaultdict(list)
-
-    def _client_id(self, request: Request) -> str:
-        return request.client.host if request.client else "unknown"
 
     def is_allowed(self, client_id: str, max_requests: int, window_sec: int) -> Tuple[bool, int]:
         if USE_REDIS and _redis:
@@ -50,10 +58,15 @@ class RateLimiter:
 
 
 _limiter = RateLimiter()
+
+# (max_requests, window_seconds)
 RATE_LIMITS = {
-    "/auth/login": (20, 60),
-    "/auth/register": (10, 600),
-    "default": (200, 60),
+    "/auth/login": (10, 60),                    # 10 attempts/min per IP
+    "/auth/register": (5, 600),                  # 5 registrations/10min per IP
+    "/auth/send-registration-code": (3, 300),    # 3 codes/5min per IP (email spam prevention)
+    "/chat/send": (30, 60),                      # 30 messages/min per IP
+    "/vocabulary/lookup": (20, 60),              # 20 lookups/min per IP
+    "default": (120, 60),
 }
 
 
@@ -70,7 +83,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
         path = request.url.path
         max_r, window = _get_limit(path)
-        client_id = _limiter._client_id(request)
+        client_id = _get_client_ip(request)
         ok, remaining = _limiter.is_allowed(client_id, max_r, window)
         if not ok:
             return JSONResponse(

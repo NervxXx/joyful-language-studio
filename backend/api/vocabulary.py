@@ -49,8 +49,8 @@ async def lookup_word(
     try:
         result = await llm_service.lookup_word(word)
         return result
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Ошибка: {str(e)}")
+    except Exception:
+        raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail="Сервис временно недоступен")
 
 
 @router.get("/words")
@@ -147,6 +147,8 @@ def reorder_words(
 ):
     if not body.items:
         return {"ok": True}
+    if len(body.items) > 500:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Слишком много элементов")
     ids = [item.id for item in body.items]
     words = list(
         db.exec(
@@ -178,7 +180,8 @@ def update_word(
     w = db.get(VocabularyWord, word_id)
     if not w:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Слово не найдено")
-    if w.user_id and w.user_id != current_user.id:
+    # Global words (user_id=None) are read-only for regular users
+    if w.user_id is None or w.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
     if body.is_active is not None:
         w.is_active = body.is_active
@@ -206,7 +209,8 @@ def delete_word(
     w = db.get(VocabularyWord, word_id)
     if not w:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Слово не найдено")
-    if w.user_id and w.user_id != current_user.id:
+    # Global words (user_id=None) are read-only for regular users
+    if w.user_id is None or w.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Доступ запрещён")
     db.delete(w)
     db.commit()

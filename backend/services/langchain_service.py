@@ -72,9 +72,13 @@ class LangChainService:
         if coach_type == "custom" and context:
             m = re.search(r"\[PERSONALITY\](.*?)\[/PERSONALITY\]", context, re.DOTALL)
             if m:
-                personality = m.group(1).strip()
+                # Limit personality to 500 chars to prevent prompt injection bloat
+                personality = m.group(1).strip()[:500]
+                # Strip any embedded instruction keywords that could hijack the prompt
+                personality = re.sub(r"(?i)(system:|ignore previous|forget|new instructions?|override)", "", personality).strip()
                 system = (
-                    f"You are an English learning AI coach with the following personality: {personality}\n"
+                    f"You are an English learning AI coach with the following personality style: {personality}\n"
+                    "Your only purpose is helping the student practice English. "
                     "When they make mistakes, correct them. Keep responses natural (1-4 sentences)."
                 )
                 context = re.sub(r"\[PERSONALITY\].*?\[/PERSONALITY\]\s*", "", context, flags=re.DOTALL).strip() or None
@@ -92,7 +96,9 @@ class LangChainService:
                 + system
             )
         if context and context.strip():
-            system = system.rstrip() + f"\n\nUser context for this conversation:\n{context.strip()}"
+            # Limit context to 1000 chars max to prevent prompt injection via large context
+            safe_context = context.strip()[:1000]
+            system = system.rstrip() + f"\n\nConversation context (student's level/scenario):\n{safe_context}"
         if vocab_words:
             words_list = ", ".join(vocab_words)
             system = system.rstrip() + (
@@ -182,7 +188,9 @@ class LangChainService:
 
     async def lookup_word(self, word: str) -> dict:
         """Get translation, phonetic, and usage examples for a word (EN or RU input)."""
-        prompt = f"""You are an English-Russian dictionary assistant. The user entered: "{word}"
+        # Sanitize: strip control chars, limit length (already sliced to 200 in API layer)
+        safe_word = re.sub(r'[\x00-\x1f\x7f]', '', word)[:100]
+        prompt = f"""You are an English-Russian dictionary assistant. The user entered a word or phrase: "{safe_word}"
 
 Respond with a JSON object only (no extra text), in this exact format:
 {{
@@ -206,7 +214,7 @@ Rules:
         data = json.loads(content)
         examples_str = "\n".join(data.get("examples", [])) if isinstance(data.get("examples"), list) else str(data.get("examples", ""))
         return {
-            "word_en": str(data.get("word_en", word)).strip(),
+            "word_en": str(data.get("word_en", safe_word)).strip(),
             "word_ru": str(data.get("word_ru", "")).strip(),
             "phonetic": str(data.get("phonetic", "")).strip() or None,
             "examples": examples_str or None,

@@ -7,18 +7,29 @@ import time
 import logging
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
 class EmailService:
     def __init__(self):
-        self.smtp_server = os.getenv("SMTP_SERVER", "smtp.gmail.com")
-        self.smtp_port = int(os.getenv("SMTP_PORT", "587"))
-        self.sender_email = os.getenv("SMTP_SENDER_EMAIL")
-        self.sender_password = os.getenv("SMTP_SENDER_PASSWORD")
         self.context = ssl.create_default_context()
+
+    @property
+    def smtp_server(self):
+        return os.getenv("SMTP_SERVER", "smtp.gmail.com")
+
+    @property
+    def smtp_port(self):
+        return int(os.getenv("SMTP_PORT", "587"))
+
+    @property
+    def sender_email(self):
+        return os.getenv("SMTP_SENDER_EMAIL")
+
+    @property
+    def sender_password(self):
+        return os.getenv("SMTP_SENDER_PASSWORD")
 
     def send_email(self, subject: str, body: str, recipient: str) -> bool:
         if not all([self.sender_email, self.sender_password]):

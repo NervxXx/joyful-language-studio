@@ -19,7 +19,7 @@ from core.database import create_db_and_tables
 from core.security import SecurityHeadersMiddleware
 from core.rate_limiter import RateLimitMiddleware
 from core.csrf import CSRFMiddleware
-from config import ALLOWED_ORIGINS
+from config import ALLOWED_ORIGINS, ENVIRONMENT
 from api.auth import router as auth_router
 from api.chat import router as chat_router
 from api.vocabulary import router as vocabulary_router
@@ -38,11 +38,15 @@ async def lifespan(app: FastAPI):
     yield
 
 
+_is_prod = ENVIRONMENT == "production"
 app = FastAPI(
     title="English Studio API",
     description="Backend для приложения изучения языков",
     version="1.0.0",
     lifespan=lifespan,
+    docs_url=None if _is_prod else "/docs",
+    redoc_url=None if _is_prod else "/redoc",
+    openapi_url=None if _is_prod else "/openapi.json",
 )
 
 app.add_middleware(SecurityHeadersMiddleware)
