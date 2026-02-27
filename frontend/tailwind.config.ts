@@ -74,11 +74,18 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        xl: "1rem",
+        xl: "1.25rem",
+        "2xl": "1.5rem",
+        "3xl": "2rem",
       },
       boxShadow: {
-        card: "0 10px 25px -5px rgba(0,0,0,0.05), 0 8px 10px -6px rgba(0,0,0,0.02)",
-        "card-hover": "0 20px 40px -10px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.04)",
+        glass: "0 8px 32px var(--glass-shadow)",
+        "glass-hover": "0 12px 40px var(--glass-shadow), 0 4px 16px var(--glass-shadow)",
+        card: "0 10px 25px -5px rgba(0,0,0,0.04), 0 8px 10px -6px rgba(0,0,0,0.02)",
+        "card-hover": "0 20px 40px -10px rgba(0,0,0,0.08), 0 8px 10px -6px rgba(0,0,0,0.03)",
+        "soft": "0 2px 16px rgba(160, 120, 220, 0.06)",
+        "glow-blue": "0 4px 20px hsl(272 55% 58% / 0.2)",
+        "glow-purple": "0 4px 20px hsl(280 50% 62% / 0.2)",
       },
       keyframes: {
         "accordion-down": {
@@ -89,10 +96,18 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "float-in": {
+          from: { opacity: "0", transform: "translateY(16px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "float-in": "float-in 0.4s ease-out",
+      },
+      backdropBlur: {
+        xs: "2px",
       },
     },
   },
