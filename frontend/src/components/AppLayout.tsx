@@ -106,9 +106,6 @@ export default function AppLayout() {
   return (
     <SidebarProvider>
         <div className="min-h-screen flex w-full relative">
-          <div className="bg-decoration">
-            <SeamlessBackground />
-          </div>
 
         <div className="hidden lg:block">
           <AppSidebar />
@@ -153,7 +150,7 @@ export default function AppLayout() {
                     <div className="flex justify-center px-3 mb-2">
                       <button
                         onClick={() => handleNav("/setup")}
-                        className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-sm transition-colors"
+                        className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3.5 rounded-2xl border border-primary/40 hover:bg-muted text-primary font-semibold text-sm transition-all hover:shadow-soft"
                       >
                         <span className="text-lg leading-none">+</span>
                         {tr("setup.title")}
@@ -186,8 +183,11 @@ export default function AppLayout() {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 flex items-center justify-between px-4 lg:px-6 border-b border-border bg-card/80 backdrop-blur-md sticky top-0 z-30 shrink-0">
+        <div className="flex-1 flex flex-col min-w-0 relative">
+          <div className="bg-decoration">
+            <SeamlessBackground />
+          </div>
+          <header className="h-14 flex items-center justify-between px-4 lg:px-6 glass-header sticky top-0 z-30 shrink-0">
             <div className="flex items-center gap-3">
               <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">
                 <Menu size={20} className="text-foreground" />

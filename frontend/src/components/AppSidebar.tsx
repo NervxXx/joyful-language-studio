@@ -202,7 +202,7 @@ export function AppSidebar() {
                 <div className="flex justify-center px-3">
                   <button
                     onClick={() => navigate("/setup")}
-                    className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary font-semibold text-sm transition-colors"
+                    className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl border border-primary/40 hover:bg-muted text-primary font-semibold text-sm transition-colors"
                   >
                     <Plus size={18} strokeWidth={2} />
                     {tr("setup.title")}
