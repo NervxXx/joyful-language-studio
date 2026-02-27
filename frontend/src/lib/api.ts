@@ -166,7 +166,7 @@ export const api = {
     conversationId?: number,
     coachType?: string,
     title?: string,
-    options?: { voiceMode?: boolean; explainLang?: "ru" | "en"; extraContext?: string }
+    options?: { voiceMode?: boolean; explainLang?: "ru" | "en"; extraContext?: string; vocabWords?: string[] }
   ) =>
     request<{
       conversation_id: number;
@@ -184,6 +184,7 @@ export const api = {
         voice_mode: options?.voiceMode ?? false,
         explain_lang: options?.explainLang ?? null,
         extra_context: options?.extraContext ?? null,
+        vocab_words: options?.vocabWords ?? null,
       }),
     }),
 

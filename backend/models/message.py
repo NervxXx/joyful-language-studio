@@ -36,7 +36,8 @@ class ChatSendRequest(BaseModel):
     message: str
     conversation_id: Optional[int] = None
     coach_type: Optional[str] = "friendly"
-    title: Optional[str] = None  # для нового чата (напр. "Аудиоразговор")
-    voice_mode: Optional[bool] = False  # голосовой чат: не учитывать пунктуацию
-    explain_lang: Optional[str] = None  # "ru" | "en" — язык объяснений и ответов на вопросы
-    extra_context: Optional[str] = None  # дополнительный контекст (напр. словарь) для данного сообщения
+    title: Optional[str] = None
+    voice_mode: Optional[bool] = False
+    explain_lang: Optional[str] = None
+    extra_context: Optional[str] = None
+    vocab_words: Optional[list[str]] = None

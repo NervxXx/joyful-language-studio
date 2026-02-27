@@ -80,12 +80,15 @@ async def send_message(
         conv_id = conv_obj.id
     coach_type = body.coach_type or (conv_obj.coach_type if conv_obj else "friendly") or "friendly"
 
-    user_msg = conv_service.save_message(db, conv_id, content, is_from_user=True)
+    all_msgs = conv_service.get_messages(db, conv_id, limit=50)
     history = [
         {"content": m.content, "is_from_user": m.is_from_user}
-        for m in conv_service.get_messages(db, conv_id, limit=20)
+        for m in all_msgs
+        if m.content
     ]
-    history = [h for h in history if h["content"]]  # exclude just-saved
+
+    user_msg = conv_service.save_message(db, conv_id, content, is_from_user=True)
+
     context = conv_obj.context if conv_obj else None
     if body.extra_context and body.extra_context.strip():
         context = (context or "") + ("\n" if context else "") + body.extra_context.strip()
@@ -95,6 +98,8 @@ async def send_message(
         explain_lang = "ru"
     if explain_lang is None and conv_obj:
         explain_lang = getattr(conv_obj, "explain_lang", None) or "ru"
+    vocab_words = body.vocab_words or []
+    vocab_words = [w.strip() for w in vocab_words if w and w.strip()][:20]
     try:
         ai_resp = await llm_service.generate_coach_response(
             content,
@@ -104,6 +109,7 @@ async def send_message(
             context=context,
             voice_mode=voice_mode,
             explain_lang=explain_lang,
+            vocab_words=vocab_words or None,
         )
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=f"Ошибка AI: {str(e)}")

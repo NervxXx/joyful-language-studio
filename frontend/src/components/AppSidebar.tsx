@@ -53,7 +53,7 @@ import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
-import { cn } from "@/lib/utils";
+import { cn, getAvatarGradient } from "@/lib/utils";
 
 const VOICE_CHAT_TITLES = ["Аудиоразговор", "Voice chat", "Audio Conversation"];
 const VOCAB_TITLES = ["Vocabulary Practice", "Практика словаря"];
@@ -243,18 +243,26 @@ export function AppSidebar() {
                                   : "text-foreground hover:bg-muted"
                               )}
                             >
-                              <span className="text-base shrink-0 mt-0.5 flex items-center gap-1">
+                              <span className="shrink-0 mt-0.5 flex items-center gap-1">
                                 {(conv as { is_pinned?: boolean }).is_pinned && (
                                   <Pin size={12} className="text-primary shrink-0" />
                                 )}
                                 {(conv as { avatar?: string | null }).avatar ? (
-                                  <span className="text-base leading-none w-5 h-5 flex items-center justify-center">
-                                    {(conv as { avatar?: string | null }).avatar}
+                                  <span
+                                    className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm shadow-sm bg-gradient-to-br ${getAvatarGradient(
+                                      (conv as { avatar: string }).avatar
+                                    )}`}
+                                  >
+                                    {(conv as { avatar: string }).avatar}
                                   </span>
                                 ) : (
                                   (() => {
                                     const Icon = getConvIcon(conv);
-                                    return Icon ? <Icon size={16} strokeWidth={1.6} className="shrink-0 text-muted-foreground" /> : null;
+                                    return Icon ? (
+                                      <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-muted/60">
+                                        <Icon size={14} strokeWidth={1.6} className="text-muted-foreground" />
+                                      </span>
+                                    ) : null;
                                   })()
                                 )}
                               </span>
@@ -291,7 +299,13 @@ export function AppSidebar() {
                             {(conv as { is_pinned?: boolean }).is_pinned ? (
                               <Pin size={18} strokeWidth={1.6} />
                             ) : (conv as { avatar?: string | null }).avatar ? (
-                              <span className="text-base">{(conv as { avatar?: string | null }).avatar}</span>
+                              <span
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-base shadow-sm bg-gradient-to-br ${getAvatarGradient(
+                                  (conv as { avatar: string }).avatar
+                                )}`}
+                              >
+                                {(conv as { avatar: string }).avatar}
+                              </span>
                             ) : (
                               (() => {
                                 const Icon = getConvIcon(conv);

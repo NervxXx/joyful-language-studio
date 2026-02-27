@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
+import { getAvatarGradient } from "@/lib/utils";
 
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.06 } } };
 const item = { hidden: { opacity: 0, y: 14 }, show: { opacity: 1, y: 0, transition: { duration: 0.35 } } };
@@ -21,9 +22,12 @@ type CoachLabelKey =
   | "chat.coachPatient"
   | "chat.coachMotivating"
   | "chat.coachProfessional"
-  | "chat.coachCasual";
+  | "chat.coachCasual"
+  | "chat.coachNeutral"
+  | "chat.coachCustom";
 
 const coachModes: { key: CoachType; labelKey: CoachLabelKey }[] = [
+  { key: "neutral", labelKey: "chat.coachNeutral" },
   { key: "friendly", labelKey: "chat.coachFriendly" },
   { key: "strict", labelKey: "chat.coachStrict" },
   { key: "calm", labelKey: "chat.coachCalm" },
@@ -32,6 +36,7 @@ const coachModes: { key: CoachType; labelKey: CoachLabelKey }[] = [
   { key: "motivating", labelKey: "chat.coachMotivating" },
   { key: "professional", labelKey: "chat.coachProfessional" },
   { key: "casual", labelKey: "chat.coachCasual" },
+  { key: "custom", labelKey: "chat.coachCustom" },
 ];
 
 type ScenarioKey =
@@ -63,7 +68,11 @@ const presetContexts: { key: ScenarioKey }[] = [
   { key: "setup.scenarioBank" },
 ];
 
-const avatarEmojis = ["💬", "📚", "✈️", "🍽️", "🎯", "🏨", "📞", "🎉", "🛒", "🏥", "💊", "🏦"];
+const avatarEmojis = [
+  "💬", "📚", "✈️", "🍽️", "🎯", "🏨", "📞", "🎉",
+  "🛒", "🏥", "💊", "🏦", "🎓", "🌍", "🎬", "🎵",
+  "🚀", "💡", "🎨", "🧩", "☕", "🏖️", "🔬", "💼",
+];
 
 const SetupPage = () => {
   const navigate = useNavigate();
@@ -74,6 +83,7 @@ const SetupPage = () => {
   const [chatName, setChatName] = useState("");
   const [avatar, setAvatar] = useState<string | null>(null);
   const [coachType, setCoachType] = useState<CoachType>("friendly");
+  const [customCoach, setCustomCoach] = useState("");
   const [level, setLevel] = useState("B1");
   const [explainLang, setExplainLang] = useState<"ru" | "en">("ru");
   const [contextMode, setContextMode] = useState<"none" | "custom">("none");
@@ -103,6 +113,9 @@ const SetupPage = () => {
       } else {
         title = chatName.trim() || context.trim().slice(0, 50);
         contextStr = `Level: ${level}. ${context.trim()}`;
+      }
+      if (coachType === "custom" && customCoach.trim()) {
+        contextStr = `[PERSONALITY]${customCoach.trim()}[/PERSONALITY]\n${contextStr}`;
       }
 
       const res = await api.createChat({
@@ -141,26 +154,46 @@ const SetupPage = () => {
       {/* Chat name & avatar */}
       <motion.section variants={item} className="space-y-3">
         <h2 className="section-heading">{tr("setup.chatName")}</h2>
-        <Input
-          value={chatName}
-          onChange={(e) => setChatName(e.target.value)}
-          placeholder={tr("setup.chatNamePlaceholder")}
-          className="h-11 bg-card border-border rounded-xl text-base md:text-sm"
-        />
+        <div className="flex items-center gap-4">
+          <button
+            type="button"
+            onClick={() => setAvatar(null)}
+            className={`shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-lg transition-all duration-300 ${
+              avatar
+                ? `bg-gradient-to-br ${getAvatarGradient(avatar)} ring-2 ring-white/20`
+                : "bg-muted/60 border-2 border-dashed border-muted-foreground/30"
+            }`}
+          >
+            {avatar || <span className="text-muted-foreground text-lg">?</span>}
+          </button>
+          <Input
+            value={chatName}
+            onChange={(e) => setChatName(e.target.value)}
+            placeholder={tr("setup.chatNamePlaceholder")}
+            className="h-11 bg-card border-border rounded-xl text-base md:text-sm flex-1"
+          />
+        </div>
         <h2 className="section-heading mt-4">{tr("setup.chatAvatar")}</h2>
-        <div className="flex flex-wrap gap-2">
-          {avatarEmojis.map((emoji) => (
-            <button
-              key={emoji}
-              type="button"
-              onClick={() => setAvatar(avatar === emoji ? null : emoji)}
-              className={`w-10 h-10 rounded-xl text-xl flex items-center justify-center transition-all ${
-                avatar === emoji ? "bg-primary text-primary-foreground ring-2 ring-primary" : "bg-muted/50 hover:bg-muted"
-              }`}
-            >
-              {emoji}
-            </button>
-          ))}
+        <div className="grid grid-cols-8 gap-2">
+          {avatarEmojis.map((emoji) => {
+            const selected = avatar === emoji;
+            return (
+              <motion.button
+                key={emoji}
+                type="button"
+                whileHover={{ scale: 1.15 }}
+                whileTap={{ scale: 0.92 }}
+                onClick={() => setAvatar(selected ? null : emoji)}
+                className={`relative aspect-square rounded-xl text-xl flex items-center justify-center transition-all duration-200 ${
+                  selected
+                    ? `bg-gradient-to-br ${getAvatarGradient(emoji)} shadow-md ring-2 ring-primary/50`
+                    : "bg-muted/40 hover:bg-muted/70 hover:shadow-sm"
+                }`}
+              >
+                <span className={selected ? "drop-shadow-md" : ""}>{emoji}</span>
+              </motion.button>
+            );
+          })}
         </div>
       </motion.section>
 
@@ -184,6 +217,21 @@ const SetupPage = () => {
             );
           })}
         </div>
+        {coachType === "custom" && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Input
+              value={customCoach}
+              onChange={(e) => setCustomCoach(e.target.value)}
+              placeholder={tr("chat.coachCustomPlaceholder")}
+              className="h-11 bg-card border-border rounded-xl text-base md:text-sm mt-2"
+            />
+          </motion.div>
+        )}
       </motion.section>
 
       {/* Level */}

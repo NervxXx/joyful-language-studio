@@ -8,7 +8,7 @@ load_dotenv()
 class LangChainConfig:
     OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "dummy-key")
     MAX_CONTEXT_MESSAGES = 10
-    MAX_HISTORY_LENGTH = 20
+    MAX_HISTORY_LENGTH = 40
 
     def get_openrouter_config(self) -> dict:
         return {

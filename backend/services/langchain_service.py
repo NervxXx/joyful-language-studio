@@ -32,6 +32,10 @@ Keep responses structured and to the point (1-4 sentences).""",
     "casual": """You are a casual, laid-back English learning AI coach. Talk like a helpful friend, not a teacher.
 Use colloquial expressions and natural slang when appropriate. Correct mistakes in a relaxed, non-judgmental way.
 Keep responses short and conversational (1-4 sentences).""",
+    "neutral": """You are an English learning AI coach. Be balanced and adaptive — match the student's energy.
+Correct mistakes clearly and explain when helpful. Keep responses natural and concise (1-4 sentences).""",
+    "custom": """You are an English learning AI coach. Help the student practice English.
+When they make mistakes, correct them. Keep responses natural (1-4 sentences).""",
 }
 
 
@@ -62,8 +66,18 @@ class LangChainService:
         context: Optional[str] = None,
         voice_mode: bool = False,
         explain_lang: Optional[str] = None,
+        vocab_words: Optional[List[str]] = None,
     ) -> List[BaseMessage]:
         system = COACH_SYSTEM_PROMPTS.get(coach_type, COACH_SYSTEM_PROMPTS["friendly"])
+        if coach_type == "custom" and context:
+            m = re.search(r"\[PERSONALITY\](.*?)\[/PERSONALITY\]", context, re.DOTALL)
+            if m:
+                personality = m.group(1).strip()
+                system = (
+                    f"You are an English learning AI coach with the following personality: {personality}\n"
+                    "When they make mistakes, correct them. Keep responses natural (1-4 sentences)."
+                )
+                context = re.sub(r"\[PERSONALITY\].*?\[/PERSONALITY\]\s*", "", context, flags=re.DOTALL).strip() or None
         if explain_lang == "ru":
             ru_rule = (
                 "CRITICAL: Any correction or explanation of a mistake MUST be written in RUSSIAN. "
@@ -79,6 +93,21 @@ class LangChainService:
             )
         if context and context.strip():
             system = system.rstrip() + f"\n\nUser context for this conversation:\n{context.strip()}"
+        if vocab_words:
+            words_list = ", ".join(vocab_words)
+            system = system.rstrip() + (
+                f"\n\n=== VOCABULARY PRACTICE MODE (MANDATORY) ===\n"
+                f"Target words: {words_list}\n"
+                f"RULES YOU MUST FOLLOW:\n"
+                f"1. In EVERY response, naturally use 1-3 words from the target list above.\n"
+                f"2. Steer the conversation toward topics where the student MUST use these words.\n"
+                f"3. Ask direct questions that require the student to answer using the target words. "
+                f"For example: ask about their preferences, opinions, experiences related to these words.\n"
+                f"4. If the student uses a target word correctly, briefly praise them and introduce the next target word.\n"
+                f"5. If the student avoids target words, gently rephrase your question so the target word becomes the obvious answer.\n"
+                f"6. NEVER just list the words. Weave them into natural dialogue.\n"
+                f"=== END VOCABULARY PRACTICE ===\n"
+            )
         if voice_mode:
             system = system.rstrip() + "\n\nVoice mode: User messages come from speech-to-text. Do NOT correct or comment on punctuation, commas, periods, or capitalization. Focus only on grammar and vocabulary errors."
         if explain_lang == "ru":
@@ -133,11 +162,13 @@ class LangChainService:
         context: Optional[str] = None,
         voice_mode: bool = False,
         explain_lang: Optional[str] = None,
+        vocab_words: Optional[List[str]] = None,
     ) -> dict:
         """Generate AI coach response with optional correction."""
         messages = self._get_messages(
             conversation_id, history, user_message, coach_type,
-            context=context, voice_mode=voice_mode, explain_lang=explain_lang
+            context=context, voice_mode=voice_mode, explain_lang=explain_lang,
+            vocab_words=vocab_words,
         )
         response = await self.llm.ainvoke(messages)
         content = response.content if hasattr(response, "content") else str(response)

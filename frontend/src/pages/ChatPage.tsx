@@ -23,6 +23,7 @@ import { COACH_ICONS, type CoachType } from "@/lib/coachTypes";
 import { ChatSettingsSheet } from "@/components/ChatSettingsSheet";
 import { VocabularyEditSheet } from "@/components/VocabularyEditSheet";
 import { useSpeechRecognition, useSpeechSynthesis } from "@/hooks/useVoiceChat";
+import { getAvatarGradient } from "@/lib/utils";
 
 interface Message {
   id: number;
@@ -49,6 +50,7 @@ const ChatPage = () => {
   );
   const [title, setTitle] = useState("AI Coach");
   const [avatar, setAvatar] = useState<string | null>(null);
+  const [convContext, setConvContext] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [vocabEnabled, setVocabEnabled] = useState(false);
@@ -77,15 +79,12 @@ const ChatPage = () => {
       setMicStatus("processing");
       const voiceTitle = lang === "ru" ? "Аудиоразговор" : "Voice chat";
       const sendTitle = conversationId ? undefined : voiceTitle;
-      const vocabCtx =
-        vocabEnabled && activeWords.length > 0
-          ? `Vocabulary practice. Encourage the student to use these words: ${activeWords.join(", ")}.`
-          : undefined;
+      const vocabList = vocabEnabled && activeWords.length > 0 ? activeWords : undefined;
       api
         .sendMessage(text, conversationId ?? undefined, coach, sendTitle, {
           voiceMode: true,
           explainLang,
-          extraContext: vocabCtx,
+          vocabWords: vocabList,
         })
         .then((res) => {
           setConversationId(res.conversation_id);
@@ -124,6 +123,7 @@ const ChatPage = () => {
         .then(([msgs, conv]) => {
           setTitle(conv.title);
           setAvatar(conv.avatar || null);
+          setConvContext(conv.context || null);
           setCoach((conv.coach_type as CoachType) || "friendly");
           setExplainLang((conv.explain_lang === "en" ? "en" : "ru") as "ru" | "en");
           setMessages(
@@ -173,25 +173,21 @@ const ChatPage = () => {
     setLoading(true);
     try {
       let convId = conversationId;
-      if (!convId && vocabEnabled && activeWords.length > 0) {
+      const vocabList = vocabEnabled && activeWords.length > 0 ? activeWords : undefined;
+      if (!convId && vocabList) {
         const created = await api.createChat({
           title: tr("chat.vocabPractice"),
           coachType: coach,
-          context: `Vocabulary practice. Encourage the student to use these words: ${activeWords.join(", ")}.`,
           explainLang,
         });
         convId = created.conversation_id;
         setConversationId(convId);
         setTitle(tr("chat.vocabPractice"));
       }
-      const vocabCtx =
-        vocabEnabled && activeWords.length > 0
-          ? `Vocabulary practice. Encourage the student to use these words: ${activeWords.join(", ")}.`
-          : undefined;
       const res = await api.sendMessage(text, convId ?? undefined, coach, undefined, {
         voiceMode: false,
         explainLang,
-        extraContext: vocabCtx,
+        vocabWords: vocabList,
       });
       setConversationId(res.conversation_id);
       if (voiceEnabled) {
@@ -250,8 +246,14 @@ const ChatPage = () => {
             <ArrowLeft size={20} strokeWidth={1.6} className="text-foreground" />
           </button>
           <div className="flex items-center gap-2 min-w-0">
-            <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-muted/50 shrink-0 text-xl">
-              {avatar ? avatar : <HeaderIcon size={20} strokeWidth={1.6} className="text-muted-foreground" />}
+            <span
+              className={`flex items-center justify-center w-9 h-9 rounded-xl shrink-0 shadow-sm ${
+                avatar
+                  ? `bg-gradient-to-br ${getAvatarGradient(avatar)} text-xl`
+                  : "bg-muted/60"
+              }`}
+            >
+              {avatar || <HeaderIcon size={18} strokeWidth={1.6} className="text-muted-foreground" />}
             </span>
             <h1 className="font-bold text-foreground font-heading text-sm truncate">{title}</h1>
           </div>
@@ -271,11 +273,17 @@ const ChatPage = () => {
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         conversationId={conversationId}
+        title={title}
+        avatar={avatar}
         coachType={coach}
         explainLang={explainLang}
-        onSave={(c, e) => {
-          setCoach(c);
-          setExplainLang(e);
+        context={convContext}
+        onSave={(data) => {
+          setTitle(data.title);
+          setAvatar(data.avatar);
+          setCoach(data.coachType);
+          setExplainLang(data.explainLang);
+          setConvContext(data.context);
         }}
       />
 
@@ -292,8 +300,14 @@ const ChatPage = () => {
               className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
             >
               {msg.sender === "ai" && (
-                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center shrink-0 mt-1 text-base">
-                  {avatar ? avatar : <HeaderIcon size={16} strokeWidth={1.6} className="text-muted-foreground" />}
+                <div
+                  className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-1 shadow-sm ${
+                    avatar
+                      ? `bg-gradient-to-br ${getAvatarGradient(avatar)} text-base`
+                      : "bg-muted"
+                  }`}
+                >
+                  {avatar || <HeaderIcon size={15} strokeWidth={1.6} className="text-muted-foreground" />}
                 </div>
               )}
               <div className="max-w-[75%] space-y-2">

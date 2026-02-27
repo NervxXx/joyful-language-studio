@@ -1,4 +1,4 @@
-import { Smile, Shield, Heart, Laugh, Clock, Zap, Briefcase, Coffee, type LucideIcon } from "lucide-react";
+import { Smile, Shield, Heart, Laugh, Clock, Zap, Briefcase, Coffee, CircleDot, Pencil, type LucideIcon } from "lucide-react";
 
 export type CoachType =
   | "friendly"
@@ -8,7 +8,9 @@ export type CoachType =
   | "patient"
   | "motivating"
   | "professional"
-  | "casual";
+  | "casual"
+  | "neutral"
+  | "custom";
 
 export const COACH_ICONS: Record<CoachType, LucideIcon> = {
   friendly: Smile,
@@ -19,4 +21,6 @@ export const COACH_ICONS: Record<CoachType, LucideIcon> = {
   motivating: Zap,
   professional: Briefcase,
   casual: Coffee,
+  neutral: CircleDot,
+  custom: Pencil,
 };
