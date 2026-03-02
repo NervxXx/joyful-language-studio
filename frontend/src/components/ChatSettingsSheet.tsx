@@ -76,52 +76,68 @@ export function ChatSettingsSheet({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-md">
-        <SheetHeader>
-          <SheetTitle>{tr("chat.editSettings")}</SheetTitle>
+      <SheetContent side="right" className="w-full sm:max-w-md matte-glass !bg-background/60 shadow-2xl border-l-white/10 p-8 flex flex-col">
+        <SheetHeader className="pb-6 border-b border-foreground/5">
+          <SheetTitle className="text-xl font-bold tracking-tight text-foreground">{tr("chat.editSettings")}</SheetTitle>
         </SheetHeader>
-        <div className="mt-8 space-y-8">
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">{tr("chat.coachPersonality")}</h3>
-            <div className="flex flex-wrap gap-1.5">
+        <div className="mt-8 space-y-10 flex-1 overflow-y-auto pr-2">
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase opacity-70 mb-2">{tr("chat.coachPersonality")}</h3>
+            <div className="grid grid-cols-2 gap-3">
               {coachModes.map((m) => {
                 const Icon = COACH_ICONS[m.key];
+                const isActive = coach === m.key;
                 return (
                   <button
                     key={m.key}
                     onClick={() => setCoach(m.key)}
-                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                      coach === m.key ? "chip-active" : "chip-inactive"
-                    }`}
+                    className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-[13px] font-medium transition-all border ${isActive
+                        ? "bg-primary/10 border-primary/30 text-primary shadow-[0_0_15px_hsl(var(--primary)/0.15)] ring-1 ring-primary/20"
+                        : "bg-muted/30 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                      }`}
                   >
-                    <Icon size={18} strokeWidth={1.6} />
-                    {tr(m.labelKey)}
+                    <Icon size={18} strokeWidth={isActive ? 2 : 1.5} className={isActive ? "text-primary opacity-100" : "opacity-70"} />
+                    <span className="truncate">{tr(m.labelKey)}</span>
                   </button>
                 );
               })}
             </div>
           </div>
-          <div className="space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">{tr("audio.explainLang")}</h3>
-            <p className="text-xs text-muted-foreground">{tr("audio.explainLangDesc")}</p>
-            <div className="flex gap-2">
+          <div className="space-y-4">
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-foreground tracking-wide uppercase opacity-70">{tr("audio.explainLang")}</h3>
+              <p className="text-[13px] text-muted-foreground/80 leading-relaxed">{tr("audio.explainLangDesc")}</p>
+            </div>
+            <div className="flex gap-3 bg-muted/30 p-1.5 rounded-2xl backdrop-blur-sm border border-foreground/5">
               <button
                 onClick={() => setExplain("ru")}
-                className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${explain === "ru" ? "chip-active" : "chip-inactive"}`}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${explain === "ru"
+                    ? "bg-background text-foreground shadow-sm ring-1 ring-black/5 dark:ring-white/5"
+                    : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 Русский
               </button>
               <button
                 onClick={() => setExplain("en")}
-                className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${explain === "en" ? "chip-active" : "chip-inactive"}`}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium transition-all ${explain === "en"
+                    ? "bg-background text-foreground shadow-sm ring-1 ring-black/5 dark:ring-white/5"
+                    : "text-muted-foreground hover:text-foreground"
+                  }`}
               >
                 English
               </button>
             </div>
           </div>
-          <Button onClick={handleSave} disabled={loading} className="w-full rounded-xl">
-            {loading ? "..." : tr("common.save")}
-          </Button>
+          <div className="pt-6 mt-auto border-t border-foreground/5 pb-4">
+            <Button
+              onClick={handleSave}
+              disabled={loading}
+              className="w-full rounded-2xl h-12 text-base font-semibold shadow-[0_8px_20px_hsl(var(--primary)/0.25)] hover:shadow-[0_12px_25px_hsl(var(--primary)/0.35)] transition-all bg-primary hover:bg-primary/95 text-primary-foreground"
+            >
+              {loading ? "..." : tr("common.save")}
+            </Button>
+          </div>
         </div>
       </SheetContent>
     </Sheet>

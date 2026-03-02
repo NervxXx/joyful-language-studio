@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { Magnetic } from "@/components/Effects";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Home,
@@ -172,7 +173,7 @@ export function AppSidebar() {
         <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center shrink-0 shadow-sm">
           <Zap size={15} className="text-primary-foreground" />
         </div>
-        {!collapsed && <span className="font-heading font-bold text-foreground text-base tracking-tight">LinguaAI</span>}
+        {!collapsed && <span className="font-serif italic font-bold text-foreground text-base tracking-tight">LinguaAI</span>}
       </div>
 
       <SidebarContent>
@@ -181,14 +182,16 @@ export function AppSidebar() {
             <SidebarMenu>
               {mainNav.map((item) => (
                 <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.url)}
-                    isActive={isActive(item.url)}
-                    className={linkClass}
-                  >
-                    <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
-                    {!collapsed && <span>{item.title}</span>}
-                  </SidebarMenuButton>
+                  <Magnetic strength={0.2}>
+                    <SidebarMenuButton
+                      onClick={() => navigate(item.url)}
+                      isActive={isActive(item.url)}
+                      className={linkClass}
+                    >
+                      <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </SidebarMenuButton>
+                  </Magnetic>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -200,13 +203,15 @@ export function AppSidebar() {
             {!collapsed && (
               <div className="space-y-3 mb-3">
                 <div className="flex justify-center px-3">
-                  <button
-                    onClick={() => navigate("/setup")}
-                    className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl border border-primary/40 hover:bg-muted text-primary font-semibold text-sm transition-colors"
-                  >
-                    <Plus size={18} strokeWidth={2} />
-                    {tr("setup.title")}
-                  </button>
+                  <Magnetic strength={0.3}>
+                    <button
+                      onClick={() => navigate("/setup")}
+                      className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl border border-primary/40 hover:bg-muted text-primary font-semibold text-sm transition-colors"
+                    >
+                      <Plus size={18} strokeWidth={2} />
+                      {tr("setup.title")}
+                    </button>
+                  </Magnetic>
                 </div>
                 <p className="px-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   {tr("nav.chatHistory")}
@@ -215,13 +220,15 @@ export function AppSidebar() {
             )}
             {collapsed && (
               <div className="flex justify-center px-2 mb-3">
-                <button
-                  onClick={() => navigate("/setup")}
-                  className="flex items-center justify-center p-2.5 rounded-xl hover:bg-muted text-primary transition-colors"
-                  title={tr("setup.title")}
-                >
-                  <Plus size={18} strokeWidth={2} />
-                </button>
+                <Magnetic strength={0.5}>
+                  <button
+                    onClick={() => navigate("/setup")}
+                    className="flex items-center justify-center p-2.5 rounded-xl hover:bg-muted text-primary transition-colors"
+                    title={tr("setup.title")}
+                  >
+                    <Plus size={18} strokeWidth={2} />
+                  </button>
+                </Magnetic>
               </div>
             )}
             <SidebarGroupContent className="flex-1 min-h-0 flex flex-col overflow-hidden">

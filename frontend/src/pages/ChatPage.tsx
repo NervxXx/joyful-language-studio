@@ -10,10 +10,11 @@ import {
   Loader2,
   Paperclip,
   Pencil,
-  Send,
+  SendHorizontal,
   Settings,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Magnetic, LiquidLoader } from "@/components/Effects";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
@@ -245,27 +246,57 @@ const ChatPage = () => {
   return (
     <div className="flex flex-col h-[calc(100vh-3.5rem)] min-h-0 bg-transparent">
       {/* Chat header */}
-      <header className="flex items-center justify-between px-4 md:px-6 py-3.5 glass-header shrink-0">
-        <div className="flex items-center gap-3 min-w-0">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-2xl hover:bg-muted/50 transition-all shrink-0">
-            <ArrowLeft size={20} strokeWidth={1.6} className="text-foreground" />
-          </button>
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span className="flex items-center justify-center w-9 h-9 rounded-2xl icon-bubble shrink-0 text-xl">
-              {avatar ? avatar : <HeaderIcon size={20} strokeWidth={1.6} className="text-muted-foreground" />}
-            </span>
-            <h1 className="font-bold text-foreground font-heading text-sm truncate">{title}</h1>
+      <header className="flex flex-col gap-4 px-4 md:px-6 py-4 glass-header shrink-0">
+        <div className="flex items-center justify-between min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-2xl hover:bg-muted/50 transition-all shrink-0">
+              <ArrowLeft size={20} strokeWidth={1} className="text-foreground" />
+            </button>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="flex items-center justify-center w-9 h-9 rounded-2xl icon-bubble shrink-0 text-xl border border-white/40">
+                {avatar ? avatar : <HeaderIcon size={20} strokeWidth={1} className="text-muted-foreground" />}
+              </span>
+              <h1 className="font-bold text-foreground font-heading text-base truncate">{title}</h1>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="p-2.5 rounded-full hover:bg-muted/50 transition-all border border-transparent hover:border-white/20"
+              title={tr("chat.editSettings")}
+            >
+              <Settings size={22} strokeWidth={1} className="text-foreground/80" />
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="p-2.5 rounded-2xl hover:bg-muted/50 transition-all"
-            title={tr("chat.editSettings")}
-          >
-            <Settings size={18} strokeWidth={1.6} className="text-muted-foreground" />
-          </button>
-        </div>
+
+        {/* Glassmorphism Tabs at Top */}
+        {user && (
+          <div className="flex items-center justify-center gap-3 w-full max-w-sm mx-auto">
+            <button
+              onClick={() => setVocabEnabled((v) => !v)}
+              className={`flex-1 flex justify-center items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all backdrop-blur-md border ${vocabEnabled
+                ? "bg-white/40 border-white/60 shadow-[0_0_15px_rgba(255,255,255,0.5)] text-foreground"
+                : "bg-white/10 border-white/20 text-muted-foreground hover:bg-white/20"
+                }`}
+            >
+              <BookOpen size={16} strokeWidth={1.5} />
+              {tr("chat.vocabMode")}
+            </button>
+            {showVoiceMic && (
+              <button
+                onClick={() => setVoiceEnabled((v) => !v)}
+                className={`flex-1 flex justify-center items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all backdrop-blur-md border ${voiceEnabled
+                  ? "bg-white/40 border-white/60 shadow-[0_0_15px_rgba(255,255,255,0.5)] text-foreground"
+                  : "bg-white/10 border-white/20 text-muted-foreground hover:bg-white/20"
+                  }`}
+              >
+                <Headphones size={16} strokeWidth={1.5} />
+                {tr("chat.voiceMode")}
+              </button>
+            )}
+          </div>
+        )}
       </header>
 
       <ChatSettingsSheet
@@ -326,133 +357,97 @@ const ChatPage = () => {
         </div>
       </div>
 
-      {/* Vocab panel */}
-      {showVocabPanel && (
-        <div className="px-4 md:px-6 py-2.5 glass-header shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-muted-foreground">{tr("chat.activeWords")}</p>
-            <button
-              onClick={() => setEditDictOpen(true)}
-              className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
-            >
-              <Pencil size={14} strokeWidth={1.6} />
-              {tr("vocab.editDict")}
-            </button>
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {activeWords.map((word) => (
-              <span
-                key={word}
-                className="shrink-0 px-4 py-1.5 rounded-full text-primary text-sm font-medium border border-primary/40 bg-muted/30"
-              >
-                {word}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Input area */}
-      {voiceEnabled && showVoiceMic ? (
-        <div className="px-4 md:px-6 py-6 glass-header shrink-0 flex flex-col items-center gap-3">
-          {user && (
-            <div className="flex items-center gap-2">
+      {/* Bottom Container (Vocab + Input) */}
+      <div className="backdrop-blur-xl bg-background/30 border-t border-foreground/5 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] shrink-0 flex flex-col">
+        {/* Vocab panel */}
+        {showVocabPanel && (
+          <div className="px-4 md:px-6 py-3 border-b border-foreground/5">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-semibold text-muted-foreground">{tr("chat.activeWords")}</p>
               <button
-                onClick={() => setVocabEnabled((v) => !v)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-all ${vocabEnabled ? "chip-active" : "chip-inactive"
-                  }`}
+                onClick={() => setEditDictOpen(true)}
+                className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
               >
-                <BookOpen size={14} strokeWidth={1.6} />
-                {tr("chat.vocabMode")}
-              </button>
-              <button
-                onClick={() => setVoiceEnabled((v) => !v)}
-                className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-all chip-active"
-              >
-                <Headphones size={14} strokeWidth={1.6} />
-                {tr("chat.voiceMode")}
+                <Pencil size={14} strokeWidth={1.6} />
+                {tr("vocab.editDict")}
               </button>
             </div>
-          )}
-          <motion.button
-            onClick={handleMicClick}
-            disabled={micStatus === "processing"}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`w-28 h-28 rounded-full flex items-center justify-center transition-all ${micStatus === "listening"
-              ? "gradient-primary text-primary-foreground shadow-glow-blue scale-110"
-              : micStatus === "speaking"
-                ? "bg-accent text-accent-foreground shadow-glow-purple"
-                : micStatus === "processing"
-                  ? "bg-muted text-muted-foreground cursor-wait"
-                  : "gradient-primary text-primary-foreground shadow-glow-blue"
-              }`}
-          >
-            {micStatus === "processing" ? (
-              <Loader2 size={36} className="animate-spin" />
-            ) : micStatus === "speaking" ? (
-              <MicOff size={36} strokeWidth={1.8} />
-            ) : (
-              <Mic size={36} strokeWidth={1.8} />
-            )}
-          </motion.button>
-          <p className="text-sm text-muted-foreground">
-            {micStatus === "idle" && tr("audio.clickToStart")}
-            {micStatus === "listening" && tr("audio.clickToStop")}
-            {micStatus === "processing" && tr("audio.processing")}
-            {micStatus === "speaking" && tr("audio.speaking")}
-          </p>
-          {rec.error === "no-speech" && (
-            <p className="text-sm text-destructive">{tr("audio.errorNoSpeech")}</p>
-          )}
-        </div>
-      ) : (
-        <div className="px-4 md:px-6 py-3.5 bg-transparent shrink-0 space-y-2">
-          {user && (
-            <div className="flex items-center gap-2 max-w-3xl mx-auto mb-2">
-              <button
-                onClick={() => setVocabEnabled((v) => !v)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-all ${vocabEnabled ? "chip-active" : "chip-inactive"
-                  }`}
-              >
-                <BookOpen size={14} strokeWidth={1.6} />
-                {tr("chat.vocabMode")}
-              </button>
-              {showVoiceMic && (
-                <button
-                  onClick={() => setVoiceEnabled((v) => !v)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-medium transition-all ${voiceEnabled ? "chip-active" : "chip-inactive"
-                    }`}
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {activeWords.map((word) => (
+                <span
+                  key={word}
+                  className="shrink-0 px-4 py-1.5 rounded-full text-primary text-sm font-medium border border-primary/40 bg-muted/30"
                 >
-                  <Headphones size={14} strokeWidth={1.6} />
-                  {tr("chat.voiceMode")}
-                </button>
-              )}
+                  {word}
+                </span>
+              ))}
             </div>
-          )}
-          <div className="flex items-center gap-2.5 glass-card !rounded-2xl px-4 py-3 max-w-3xl mx-auto">
-            <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors shrink-0 rounded-xl hover:bg-muted/50">
-              <Paperclip size={18} strokeWidth={1.6} />
-            </button>
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendText()}
-              placeholder={tr("chat.typeMessage")}
-              className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base md:text-[15px] min-w-0"
-            />
+          </div>
+        )}
+
+        {/* Input area */}
+        {voiceEnabled && showVoiceMic ? (
+          <div className="px-4 md:px-6 py-6 flex flex-col items-center gap-4">
             <motion.button
-              onClick={handleSendText}
-              disabled={loading || !input.trim()}
+              onClick={handleMicClick}
+              disabled={micStatus === "processing"}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center shrink-0 shadow-glow-blue disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+              className={`w-28 h-28 rounded-full flex items-center justify-center transition-all ${micStatus === "listening"
+                ? "gradient-primary text-primary-foreground shadow-glow-blue scale-110"
+                : micStatus === "speaking"
+                  ? "bg-accent text-accent-foreground shadow-glow-purple"
+                  : micStatus === "processing"
+                    ? "bg-muted text-muted-foreground cursor-wait"
+                    : "gradient-primary text-primary-foreground shadow-glow-blue"
+                }`}
             >
-              <Send size={15} strokeWidth={2} className="text-primary-foreground" />
+              {micStatus === "processing" ? (
+                <LiquidLoader size={50} />
+              ) : micStatus === "speaking" ? (
+                <MicOff size={36} strokeWidth={1.8} />
+              ) : (
+                <Mic size={36} strokeWidth={1.8} />
+              )}
             </motion.button>
+            <p className="text-sm text-muted-foreground">
+              {micStatus === "idle" && tr("audio.clickToStart")}
+              {micStatus === "listening" && tr("audio.clickToStop")}
+              {micStatus === "processing" && tr("audio.processing")}
+              {micStatus === "speaking" && tr("audio.speaking")}
+            </p>
+            {rec.error === "no-speech" && (
+              <p className="text-sm text-destructive">{tr("audio.errorNoSpeech")}</p>
+            )}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="px-4 md:px-6 py-3.5 space-y-2">
+            <div className="flex items-center gap-2.5 matte-glass !rounded-2xl px-4 py-3 max-w-3xl mx-auto shadow-sm">
+              <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors shrink-0 rounded-xl hover:bg-muted/50">
+                <Paperclip size={18} strokeWidth={1.6} />
+              </button>
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendText()}
+                placeholder={tr("chat.typeMessage")}
+                className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base md:text-[15px] min-w-0"
+              />
+              <Magnetic strength={0.4}>
+                <motion.button
+                  onClick={handleSendText}
+                  disabled={loading || !input.trim()}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 btn-send-premium shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+                >
+                  <SendHorizontal size={18} strokeWidth={2.2} className="text-primary-foreground" />
+                </motion.button>
+              </Magnetic>
+            </div>
+          </div>
+        )}
+      </div>
 
       <VocabularyEditSheet open={editDictOpen} onOpenChange={setEditDictOpen} />
     </div>
