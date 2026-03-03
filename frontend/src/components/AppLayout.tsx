@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +9,29 @@ import { Menu, X, Home, BookOpen, Headphones, MessageCircle, Settings, Zap } fro
 import { COACH_ICONS } from "@/lib/coachTypes";
 import { useLanguage } from "@/contexts/LanguageContext";
 
+import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { Magnetic, LiquidLoader } from "@/components/Effects";
+
+/** Seamless adaptive background with biomorphic blobs, particles & floating letters */
 function SeamlessBackground() {
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 50, damping: 30 });
+  const springY = useSpring(mouseY, { stiffness: 50, damping: 30 });
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const { clientX, clientY } = e;
+      const x = (clientX / window.innerWidth - 0.5) * 40;
+      const y = (clientY / window.innerHeight - 0.5) * 40;
+      mouseX.set(x);
+      mouseY.set(y);
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, [mouseX, mouseY]);
+
   const letters = [
     { char: "A", top: "10%", left: "7%", size: "clamp(1.6rem, 3vw, 2.8rem)", delay: "0s", dur: "8s" },
     { char: "B", top: "16%", right: "10%", size: "clamp(1.2rem, 2.2vw, 2rem)", delay: "1.2s", dur: "10s" },
@@ -33,11 +55,14 @@ function SeamlessBackground() {
 
   return (
     <>
-      <div className="bg-blob bg-blob-1" />
-      <div className="bg-blob bg-blob-2" />
-      <div className="bg-blob bg-blob-3" />
-      <div className="bg-blob bg-blob-4" />
-      <div className="bg-blob bg-blob-5" />
+      {/* 5 biomorphic fluid blobs — viewport-relative with parallax */}
+      <motion.div className="bg-blob bg-blob-1" style={{ x: useTransform(springX, (v) => v * 1.2), y: useTransform(springY, (v) => v * 1.2) }} />
+      <motion.div className="bg-blob bg-blob-2" style={{ x: useTransform(springX, (v) => v * -0.8), y: useTransform(springY, (v) => v * -0.8) }} />
+      <motion.div className="bg-blob bg-blob-3" style={{ x: useTransform(springX, (v) => v * 1.5), y: useTransform(springY, (v) => v * 1.5) }} />
+      <motion.div className="bg-blob bg-blob-4" style={{ x: useTransform(springX, (v) => v * -1.1), y: useTransform(springY, (v) => v * -1.1) }} />
+      <motion.div className="bg-blob bg-blob-5" style={{ x: useTransform(springX, (v) => v * 0.9), y: useTransform(springY, (v) => v * 0.9) }} />
+
+      {/* Glowing particles */}
       {particles.map((p, i) => (
         <div
           key={`p-${i}`}
@@ -51,6 +76,8 @@ function SeamlessBackground() {
           }}
         />
       ))}
+
+      {/* Floating letters — viewport-scaled */}
       {letters.map((l, i) => (
         <span
           key={`l-${i}`}
@@ -67,6 +94,7 @@ function SeamlessBackground() {
           {l.char}
         </span>
       ))}
+
     </>
   );
 }
@@ -105,7 +133,7 @@ export default function AppLayout() {
 
   return (
     <SidebarProvider>
-        <div className="min-h-screen flex w-full relative">
+      <div className="min-h-screen flex w-full relative">
 
         <div className="hidden lg:block">
           <AppSidebar />
@@ -114,47 +142,51 @@ export default function AppLayout() {
         {/* Mobile burger menu overlay */}
         {mobileOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
-            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-            <nav className="absolute left-0 top-0 bottom-0 w-72 bg-card shadow-2xl animate-in slide-in-from-left duration-200 flex flex-col">
-              <div className="flex items-center justify-between p-4 border-b border-border">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shrink-0">
-                    <Zap size={15} className="text-primary-foreground" />
-                  </div>
-                  <span className="font-heading font-bold text-foreground text-base tracking-tight">LinguaAI</span>
+            <div className="absolute inset-0 bg-black/30 backdrop-blur-md" onClick={() => setMobileOpen(false)} />
+            <nav className="absolute left-0 top-0 bottom-0 w-72 sidebar-glass shadow-2xl animate-in slide-in-from-left duration-300 flex flex-col border-r border-white/10">
+              <div className="flex items-center justify-between p-5 border-b border-border/50">
+                <div className="flex items-center gap-3">
+                  <Magnetic strength={0.2}>
+                    <div className="w-9 h-9 rounded-2xl gradient-primary flex items-center justify-center shrink-0 shadow-glow-blue cursor-pointer">
+                      <Zap size={15} className="text-primary-foreground" />
+                    </div>
+                  </Magnetic>
+                  <span className="font-serif italic font-bold text-foreground text-xl tracking-tight">LinguaAI</span>
                 </div>
-                <button onClick={() => setMobileOpen(false)} className="p-2 rounded-lg hover:bg-muted transition-colors">
+                <button onClick={() => setMobileOpen(false)} className="p-2 rounded-xl hover:bg-muted/50 transition-colors">
                   <X size={18} className="text-muted-foreground" />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+              <div className="flex-1 overflow-y-auto py-5 px-3 space-y-6">
                 <div>
                   <div className="space-y-1 mb-4">
                     {mainNav.map((item) => (
-                      <button
-                        key={item.url}
-                        onClick={() => handleNav(item.url)}
-                        className={`flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm transition-colors ${
-                          isActive(item.url) ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"
-                        }`}
-                      >
-                        <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
-                        <span>{item.title}</span>
-                      </button>
+                      <Magnetic key={item.url} strength={0.15}>
+                        <button
+                          onClick={() => handleNav(item.url)}
+                          className={`flex items-center gap-3 w-full px-4 py-3 rounded-2xl text-sm transition-all ${isActive(item.url) ? "text-primary font-medium shadow-soft" : "text-foreground hover:bg-muted/50"
+                            }`}
+                        >
+                          <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
+                          <span>{item.title}</span>
+                        </button>
+                      </Magnetic>
                     ))}
                   </div>
                 </div>
                 {user && (
                   <div>
-                    <div className="flex justify-center px-3 mb-2">
-                      <button
-                        onClick={() => handleNav("/setup")}
-                        className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3.5 rounded-2xl border border-primary/40 hover:bg-muted text-primary font-semibold text-sm transition-all hover:shadow-soft"
-                      >
-                        <span className="text-lg leading-none">+</span>
-                        {tr("setup.title")}
-                      </button>
+                    <div className="flex justify-center px-3 mb-3">
+                      <Magnetic strength={0.2}>
+                        <button
+                          onClick={() => handleNav("/setup")}
+                          className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3.5 rounded-2xl border border-primary/40 hover:bg-muted text-primary font-semibold text-sm transition-all hover:shadow-soft"
+                        >
+                          <span className="text-lg leading-none">+</span>
+                          {tr("setup.title")}
+                        </button>
+                      </Magnetic>
                     </div>
                     <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider px-3 mb-2">
                       {tr("nav.chatHistory")}
@@ -164,14 +196,13 @@ export default function AppLayout() {
                         <button
                           key={conv.id}
                           onClick={() => handleNav(`/chat?conv=${conv.id}`)}
-                          className={`flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-left text-sm transition-colors ${
-                            activeConvId === conv.id ? "bg-primary/10 text-primary font-medium" : "text-foreground hover:bg-muted"
-                          }`}
+                          className={`flex items-center gap-2.5 w-full px-4 py-2.5 rounded-2xl text-left text-sm transition-all ${activeConvId === conv.id ? "text-primary font-medium" : "text-foreground hover:bg-muted/50"
+                            }`}
                         >
                           {(() => {
-                              const Icon = getConvIcon(conv);
-                              return <Icon size={16} strokeWidth={1.6} className="shrink-0 text-muted-foreground" />;
-                            })()}
+                            const Icon = getConvIcon(conv);
+                            return <Icon size={16} strokeWidth={1.6} className="shrink-0 text-muted-foreground" />;
+                          })()}
                           <span className="truncate flex-1">{conv.title || "AI Coach"}</span>
                         </button>
                       ))}
@@ -184,18 +215,28 @@ export default function AppLayout() {
         )}
 
         <div className="flex-1 flex flex-col min-w-0 relative">
+          {/* Seamless adaptive background - now relative to content area */}
           <div className="bg-decoration">
             <SeamlessBackground />
           </div>
           <header className="h-14 flex items-center justify-between px-4 lg:px-6 glass-header sticky top-0 z-30 shrink-0">
             <div className="flex items-center gap-3">
-              <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-lg hover:bg-muted transition-colors">
-                <Menu size={20} className="text-foreground" />
-              </button>
+              <Magnetic strength={0.4}>
+                <button onClick={() => setMobileOpen(true)} className="lg:hidden p-2 -ml-2 rounded-xl hover:bg-muted/50 transition-colors">
+                  <Menu size={20} className="text-foreground" />
+                </button>
+              </Magnetic>
               <div className="hidden lg:block">
                 <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
               </div>
-              <span className="font-heading font-semibold text-foreground text-sm tracking-tight">LinguaAI</span>
+              <div className="flex items-center gap-2">
+                <Magnetic strength={0.2}>
+                  <div className="w-7 h-7 rounded-xl gradient-primary flex items-center justify-center shadow-sm cursor-pointer">
+                    <Zap size={12} className="text-primary-foreground" />
+                  </div>
+                </Magnetic>
+                <span className="font-serif italic font-bold text-foreground text-lg tracking-tight">LinguaAI</span>
+              </div>
             </div>
           </header>
           <main className="flex-1 overflow-y-auto">

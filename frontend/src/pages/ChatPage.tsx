@@ -10,10 +10,11 @@ import {
   Loader2,
   Paperclip,
   Pencil,
-  Send,
+  SendHorizontal,
   Settings,
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Magnetic, LiquidLoader } from "@/components/Effects";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card } from "@/components/ui/card";
@@ -23,7 +24,6 @@ import { COACH_ICONS, type CoachType } from "@/lib/coachTypes";
 import { ChatSettingsSheet } from "@/components/ChatSettingsSheet";
 import { VocabularyEditSheet } from "@/components/VocabularyEditSheet";
 import { useSpeechRecognition, useSpeechSynthesis } from "@/hooks/useVoiceChat";
-import { getAvatarGradient } from "@/lib/utils";
 
 interface Message {
   id: number;
@@ -50,7 +50,6 @@ const ChatPage = () => {
   );
   const [title, setTitle] = useState("AI Coach");
   const [avatar, setAvatar] = useState<string | null>(null);
-  const [convContext, setConvContext] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [vocabEnabled, setVocabEnabled] = useState(false);
@@ -79,12 +78,15 @@ const ChatPage = () => {
       setMicStatus("processing");
       const voiceTitle = lang === "ru" ? "Аудиоразговор" : "Voice chat";
       const sendTitle = conversationId ? undefined : voiceTitle;
-      const vocabList = vocabEnabled && activeWords.length > 0 ? activeWords : undefined;
+      const vocabCtx =
+        vocabEnabled && activeWords.length > 0
+          ? `Vocabulary practice. Encourage the student to use these words: ${activeWords.join(", ")}.`
+          : undefined;
       api
         .sendMessage(text, conversationId ?? undefined, coach, sendTitle, {
           voiceMode: true,
           explainLang,
-          vocabWords: vocabList,
+          extraContext: vocabCtx,
         })
         .then((res) => {
           setConversationId(res.conversation_id);
@@ -123,7 +125,6 @@ const ChatPage = () => {
         .then(([msgs, conv]) => {
           setTitle(conv.title);
           setAvatar(conv.avatar || null);
-          setConvContext(conv.context || null);
           setCoach((conv.coach_type as CoachType) || "friendly");
           setExplainLang((conv.explain_lang === "en" ? "en" : "ru") as "ru" | "en");
           setMessages(
@@ -135,10 +136,10 @@ const ChatPage = () => {
                 (m as { correction_wrong?: string; correction_right?: string; correction_reason?: string })
                   .correction_wrong && (m as { correction_right?: string }).correction_right
                   ? {
-                      wrong: (m as { correction_wrong: string }).correction_wrong,
-                      right: (m as { correction_right: string }).correction_right,
-                      reason: (m as { correction_reason?: string }).correction_reason || "",
-                    }
+                    wrong: (m as { correction_wrong: string }).correction_wrong,
+                    right: (m as { correction_right: string }).correction_right,
+                    reason: (m as { correction_reason?: string }).correction_reason || "",
+                  }
                   : undefined,
             }))
           );
@@ -173,21 +174,25 @@ const ChatPage = () => {
     setLoading(true);
     try {
       let convId = conversationId;
-      const vocabList = vocabEnabled && activeWords.length > 0 ? activeWords : undefined;
-      if (!convId && vocabList) {
+      if (!convId && vocabEnabled && activeWords.length > 0) {
         const created = await api.createChat({
           title: tr("chat.vocabPractice"),
           coachType: coach,
+          context: `Vocabulary practice. Encourage the student to use these words: ${activeWords.join(", ")}.`,
           explainLang,
         });
         convId = created.conversation_id;
         setConversationId(convId);
         setTitle(tr("chat.vocabPractice"));
       }
+      const vocabCtx =
+        vocabEnabled && activeWords.length > 0
+          ? `Vocabulary practice. Encourage the student to use these words: ${activeWords.join(", ")}.`
+          : undefined;
       const res = await api.sendMessage(text, convId ?? undefined, coach, undefined, {
         voiceMode: false,
         explainLang,
-        vocabWords: vocabList,
+        extraContext: vocabCtx,
       });
       setConversationId(res.conversation_id);
       if (voiceEnabled) {
@@ -239,54 +244,74 @@ const ChatPage = () => {
   const HeaderIcon = getHeaderIcon();
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)] min-h-0 bg-background">
-      <header className="flex items-center justify-between px-4 md:px-6 py-3.5 border-b border-border bg-card/80 backdrop-blur-md shrink-0">
-        <div className="flex items-center gap-3 min-w-0">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors shrink-0">
-            <ArrowLeft size={20} strokeWidth={1.6} className="text-foreground" />
-          </button>
-          <div className="flex items-center gap-2 min-w-0">
-            <span
-              className={`flex items-center justify-center w-9 h-9 rounded-xl shrink-0 shadow-sm ${
-                avatar
-                  ? `bg-gradient-to-br ${getAvatarGradient(avatar)} text-xl`
-                  : "bg-muted/60"
-              }`}
+    <div className="flex flex-col h-[calc(100vh-3.5rem)] min-h-0 bg-transparent">
+      {/* Chat header */}
+      <header className="flex flex-col gap-4 px-4 md:px-6 py-4 glass-header shrink-0">
+        <div className="flex items-center justify-between min-w-0">
+          <div className="flex items-center gap-3 min-w-0">
+            <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-2xl hover:bg-muted/50 transition-all shrink-0">
+              <ArrowLeft size={20} strokeWidth={1} className="text-foreground" />
+            </button>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span className="flex items-center justify-center w-9 h-9 rounded-2xl icon-bubble shrink-0 text-xl border border-white/40">
+                {avatar ? avatar : <HeaderIcon size={20} strokeWidth={1} className="text-muted-foreground" />}
+              </span>
+              <h1 className="font-bold text-foreground font-heading text-base truncate">{title}</h1>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => setSettingsOpen(true)}
+              className="p-2.5 rounded-full hover:bg-muted/50 transition-all border border-transparent hover:border-white/20"
+              title={tr("chat.editSettings")}
             >
-              {avatar || <HeaderIcon size={18} strokeWidth={1.6} className="text-muted-foreground" />}
-            </span>
-            <h1 className="font-bold text-foreground font-heading text-sm truncate">{title}</h1>
+              <Settings size={22} strokeWidth={1} className="text-foreground/80" />
+            </button>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
-          <button
-            onClick={() => setSettingsOpen(true)}
-            className="p-2 rounded-xl hover:bg-muted transition-colors"
-            title={tr("chat.editSettings")}
-          >
-            <Settings size={20} strokeWidth={1.6} className="text-muted-foreground" />
-          </button>
-        </div>
+
+        {/* Glassmorphism Tabs at Top */}
+        {user && (
+          <div className="flex items-center justify-center gap-3 w-full max-w-sm mx-auto">
+            <button
+              onClick={() => setVocabEnabled((v) => !v)}
+              className={`flex-1 flex justify-center items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all backdrop-blur-md border ${vocabEnabled
+                ? "bg-white/40 border-white/60 shadow-[0_0_15px_rgba(255,255,255,0.5)] text-foreground"
+                : "bg-white/10 border-white/20 text-muted-foreground hover:bg-white/20"
+                }`}
+            >
+              <BookOpen size={16} strokeWidth={1.5} />
+              {tr("chat.vocabMode")}
+            </button>
+            {showVoiceMic && (
+              <button
+                onClick={() => setVoiceEnabled((v) => !v)}
+                className={`flex-1 flex justify-center items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all backdrop-blur-md border ${voiceEnabled
+                  ? "bg-white/40 border-white/60 shadow-[0_0_15px_rgba(255,255,255,0.5)] text-foreground"
+                  : "bg-white/10 border-white/20 text-muted-foreground hover:bg-white/20"
+                  }`}
+              >
+                <Headphones size={16} strokeWidth={1.5} />
+                {tr("chat.voiceMode")}
+              </button>
+            )}
+          </div>
+        )}
       </header>
 
       <ChatSettingsSheet
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
         conversationId={conversationId}
-        title={title}
-        avatar={avatar}
         coachType={coach}
         explainLang={explainLang}
-        context={convContext}
-        onSave={(data) => {
-          setTitle(data.title);
-          setAvatar(data.avatar);
-          setCoach(data.coachType);
-          setExplainLang(data.explainLang);
-          setConvContext(data.context);
+        onSave={(c, e) => {
+          setCoach(c);
+          setExplainLang(e);
         }}
       />
 
+      {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto w-full min-h-0">
         <div className="px-4 md:px-6 py-6 space-y-5 max-w-3xl mx-auto w-full">
           {loadingHistory ? (
@@ -303,23 +328,16 @@ const ChatPage = () => {
                 className={`flex gap-3 ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
               >
                 {msg.sender === "ai" && (
-                  <div
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-1 shadow-sm ${
-                      avatar
-                        ? `bg-gradient-to-br ${getAvatarGradient(avatar)} text-base`
-                        : "bg-muted"
-                    }`}
-                  >
-                    {avatar || <HeaderIcon size={15} strokeWidth={1.6} className="text-muted-foreground" />}
+                  <div className="w-8 h-8 rounded-2xl icon-bubble flex items-center justify-center shrink-0 mt-1 text-base !w-8 !h-8">
+                    {avatar ? avatar : <HeaderIcon size={16} strokeWidth={1.6} className="text-muted-foreground" />}
                   </div>
                 )}
                 <div className="max-w-[75%] space-y-2">
                   <div
-                    className={`px-4 py-3 text-[15px] leading-relaxed ${
-                      msg.sender === "user"
-                        ? "msg-user"
-                        : "msg-ai text-foreground"
-                    }`}
+                    className={`px-4 py-3 text-[15px] leading-relaxed ${msg.sender === "user"
+                      ? "msg-user"
+                      : "msg-ai text-foreground"
+                      }`}
                   >
                     {msg.sender === "ai" ? <HoverableMessage text={msg.text} /> : msg.text}
                   </div>
@@ -339,131 +357,97 @@ const ChatPage = () => {
         </div>
       </div>
 
-      {showVocabPanel && (
-        <div className="px-4 md:px-6 py-2.5 border-t border-border bg-card/80 backdrop-blur-md shrink-0">
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-muted-foreground">{tr("chat.activeWords")}</p>
-            <button
-              onClick={() => setEditDictOpen(true)}
-              className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
-            >
-              <Pencil size={14} strokeWidth={1.6} />
-              {tr("vocab.editDict")}
-            </button>
-          </div>
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {activeWords.map((word) => (
-              <span
-                key={word}
-                className="shrink-0 px-4 py-1.5 rounded-full bg-primary/8 text-primary text-sm font-medium"
-              >
-                {word}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {voiceEnabled && showVoiceMic ? (
-        <div className="px-4 md:px-6 py-6 border-t border-border bg-card/80 backdrop-blur-md shrink-0 flex flex-col items-center gap-3">
-          {user && (
-            <div className="flex items-center gap-2">
+      {/* Bottom Container (Vocab + Input) */}
+      <div className="backdrop-blur-xl bg-background/30 border-t border-foreground/5 shadow-[0_-10px_30px_rgba(0,0,0,0.03)] shrink-0 flex flex-col">
+        {/* Vocab panel */}
+        {showVocabPanel && (
+          <div className="px-4 md:px-6 py-3 border-b border-foreground/5">
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-xs font-semibold text-muted-foreground">{tr("chat.activeWords")}</p>
               <button
-                onClick={() => setVocabEnabled((v) => !v)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  vocabEnabled ? "chip-active" : "chip-inactive"
-                }`}
+                onClick={() => setEditDictOpen(true)}
+                className="flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
               >
-                <BookOpen size={14} strokeWidth={1.6} />
-                {tr("chat.vocabMode")}
-              </button>
-              <button
-                onClick={() => setVoiceEnabled((v) => !v)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all chip-active"
-              >
-                <Headphones size={14} strokeWidth={1.6} />
-                {tr("chat.voiceMode")}
+                <Pencil size={14} strokeWidth={1.6} />
+                {tr("vocab.editDict")}
               </button>
             </div>
-          )}
-          <button
-            onClick={handleMicClick}
-            disabled={micStatus === "processing"}
-            className={`w-28 h-28 rounded-full flex items-center justify-center transition-all shadow-lg ${
-              micStatus === "listening"
-                ? "bg-primary text-primary-foreground scale-110"
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {activeWords.map((word) => (
+                <span
+                  key={word}
+                  className="shrink-0 px-4 py-1.5 rounded-full text-primary text-sm font-medium border border-primary/40 bg-muted/30"
+                >
+                  {word}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Input area */}
+        {voiceEnabled && showVoiceMic ? (
+          <div className="px-4 md:px-6 py-6 flex flex-col items-center gap-4">
+            <motion.button
+              onClick={handleMicClick}
+              disabled={micStatus === "processing"}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`w-28 h-28 rounded-full flex items-center justify-center transition-all ${micStatus === "listening"
+                ? "gradient-primary text-primary-foreground shadow-glow-blue scale-110"
                 : micStatus === "speaking"
-                  ? "bg-accent text-accent-foreground"
+                  ? "bg-accent text-accent-foreground shadow-glow-purple"
                   : micStatus === "processing"
                     ? "bg-muted text-muted-foreground cursor-wait"
-                    : "bg-primary/90 text-primary-foreground hover:bg-primary hover:scale-105"
-            }`}
-          >
-            {micStatus === "processing" ? (
-              <Loader2 size={36} className="animate-spin" />
-            ) : micStatus === "speaking" ? (
-              <MicOff size={36} strokeWidth={1.8} />
-            ) : (
-              <Mic size={36} strokeWidth={1.8} />
-            )}
-          </button>
-          <p className="text-sm text-muted-foreground">
-            {micStatus === "idle" && tr("audio.clickToStart")}
-            {micStatus === "listening" && tr("audio.clickToStop")}
-            {micStatus === "processing" && tr("audio.processing")}
-            {micStatus === "speaking" && tr("audio.speaking")}
-          </p>
-          {rec.error === "no-speech" && (
-            <p className="text-sm text-destructive">{tr("audio.errorNoSpeech")}</p>
-          )}
-        </div>
-      ) : (
-        <div className="px-4 md:px-6 py-3.5 border-t border-border bg-transparent shrink-0 space-y-2">
-          {user && (
-            <div className="flex items-center gap-2 max-w-3xl mx-auto mb-2">
-              <button
-                onClick={() => setVocabEnabled((v) => !v)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  vocabEnabled ? "chip-active" : "chip-inactive"
+                    : "gradient-primary text-primary-foreground shadow-glow-blue"
                 }`}
-              >
-                <BookOpen size={14} strokeWidth={1.6} />
-                {tr("chat.vocabMode")}
-              </button>
-              {showVoiceMic && (
-                <button
-                  onClick={() => setVoiceEnabled((v) => !v)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                    voiceEnabled ? "chip-active" : "chip-inactive"
-                  }`}
-                >
-                  <Headphones size={14} strokeWidth={1.6} />
-                  {tr("chat.voiceMode")}
-                </button>
-              )}
-            </div>
-          )}
-          <div className="flex items-center gap-2.5 bg-muted rounded-2xl px-4 py-2.5 max-w-3xl mx-auto">
-            <button className="p-1 text-muted-foreground hover:text-foreground transition-colors shrink-0">
-              <Paperclip size={18} strokeWidth={1.6} />
-            </button>
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendText()}
-              placeholder={tr("chat.typeMessage")}
-              className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base md:text-[15px] min-w-0"
-            />
-            <button
-              onClick={handleSendText}
-              disabled={loading || !input.trim()}
-              className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center shrink-0 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Send size={15} strokeWidth={2} className="text-primary-foreground" />
-            </button>
+              {micStatus === "processing" ? (
+                <LiquidLoader size={50} />
+              ) : micStatus === "speaking" ? (
+                <MicOff size={36} strokeWidth={1.8} />
+              ) : (
+                <Mic size={36} strokeWidth={1.8} />
+              )}
+            </motion.button>
+            <p className="text-sm text-muted-foreground">
+              {micStatus === "idle" && tr("audio.clickToStart")}
+              {micStatus === "listening" && tr("audio.clickToStop")}
+              {micStatus === "processing" && tr("audio.processing")}
+              {micStatus === "speaking" && tr("audio.speaking")}
+            </p>
+            {rec.error === "no-speech" && (
+              <p className="text-sm text-destructive">{tr("audio.errorNoSpeech")}</p>
+            )}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="px-4 md:px-6 py-3.5 space-y-2">
+            <div className="flex items-center gap-2.5 matte-glass !rounded-2xl px-4 py-3 max-w-3xl mx-auto shadow-sm">
+              <button className="p-1.5 text-muted-foreground hover:text-foreground transition-colors shrink-0 rounded-xl hover:bg-muted/50">
+                <Paperclip size={18} strokeWidth={1.6} />
+              </button>
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSendText()}
+                placeholder={tr("chat.typeMessage")}
+                className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-base md:text-[15px] min-w-0"
+              />
+              <Magnetic strength={0.4}>
+                <motion.button
+                  onClick={handleSendText}
+                  disabled={loading || !input.trim()}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-10 h-10 btn-send-premium shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none"
+                >
+                  <SendHorizontal size={18} strokeWidth={2.2} className="text-primary-foreground" />
+                </motion.button>
+              </Magnetic>
+            </div>
+          </div>
+        )}
+      </div>
 
       <VocabularyEditSheet open={editDictOpen} onOpenChange={setEditDictOpen} />
     </div>

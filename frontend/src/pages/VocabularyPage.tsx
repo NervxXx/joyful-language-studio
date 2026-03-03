@@ -81,23 +81,23 @@ const VocabularyPage = () => {
   const allWords =
     user && wordsData !== undefined
       ? wordsData.map((w) => ({
-          id: w.id,
-          word_en: w.word_en,
-          word_ru: w.word_ru,
-          phonetic: w.phonetic,
-          example: w.example,
-          is_active: w.is_active !== false,
-          sort_order: w.sort_order ?? 0,
-        }))
+        id: w.id,
+        word_en: w.word_en,
+        word_ru: w.word_ru,
+        phonetic: w.phonetic,
+        example: w.example,
+        is_active: w.is_active !== false,
+        sort_order: w.sort_order ?? 0,
+      }))
       : DEMO_WORDS.map((w) => ({
-          id: null as number | null,
-          word_en: w.word_en,
-          word_ru: w.word_ru,
-          phonetic: undefined,
-          example: undefined,
-          is_active: w.is_active,
-          sort_order: 0,
-        }));
+        id: null as number | null,
+        word_en: w.word_en,
+        word_ru: w.word_ru,
+        phonetic: undefined,
+        example: undefined,
+        is_active: w.is_active,
+        sort_order: 0,
+      }));
 
   const dbActiveWords = useMemo(
     () =>
@@ -273,7 +273,7 @@ const VocabularyPage = () => {
           </h2>
           <p className="text-xs text-muted-foreground">{tr("vocab.activeHint")}</p>
           <div
-            className="flex flex-col gap-2 min-h-[120px] max-h-[400px] overflow-y-auto p-3 rounded-xl border-2 border-dashed border-primary/20 bg-primary/5"
+            className="flex flex-col gap-2 min-h-[120px] max-h-[400px] overflow-y-auto p-3 rounded-xl border-none glass-card no-rainbow"
             onDragOver={(e) => { e.preventDefault(); setDragOverList("active"); setDragOverId(null); }}
             onDrop={() => onDropToList("active")}
           >
@@ -288,9 +288,8 @@ const VocabularyPage = () => {
                   tabIndex={0}
                   onClick={() => handleCardClick(word)}
                   onKeyDown={(e) => e.key === "Enter" && handleCardClick(word)}
-                  className={`card-hover relative p-4 bg-card shadow-sm rounded-xl flex flex-row items-center gap-3 cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-ring ${
-                    dragOverList === "active" && dragOverId === word.id ? "ring-2 ring-primary/40" : ""
-                  }`}
+                  className={`card-hover relative p-4 matte-glass no-rainbow rounded-xl flex flex-row items-center gap-3 cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-ring border-none shadow-none ${dragOverList === "active" && dragOverId === word.id ? "ring-2 ring-primary/40" : ""
+                    }`}
                 >
                   {word.id != null && <GripVertical size={16} className="text-muted-foreground/60 shrink-0" />}
                   <div className="flex-1 min-w-0 text-left">
@@ -325,7 +324,7 @@ const VocabularyPage = () => {
                   tabIndex={0}
                   onClick={() => handleCardClick(word)}
                   onKeyDown={(e) => e.key === "Enter" && handleCardClick(word)}
-                  className="card-hover p-4 bg-card shadow-sm rounded-xl flex flex-row items-center gap-3 focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="card-hover p-4 matte-glass no-rainbow rounded-xl flex flex-row items-center gap-3 focus:outline-none focus:ring-2 focus:ring-ring border-none shadow-none"
                 >
                   <div className="flex-1 min-w-0 text-left">
                     <span className="text-base font-bold text-foreground block">{word.word_en}</span>
@@ -351,7 +350,7 @@ const VocabularyPage = () => {
           </h2>
           <p className="text-xs text-muted-foreground">{tr("vocab.passiveHint")}</p>
           <div
-            className="flex flex-col gap-2 min-h-[120px] max-h-[400px] overflow-y-auto p-3 rounded-xl border-2 border-dashed border-muted-foreground/20 bg-muted/30"
+            className="flex flex-col gap-2 min-h-[120px] max-h-[400px] overflow-y-auto p-3 rounded-xl border-none glass-card no-rainbow"
             onDragOver={(e) => { e.preventDefault(); setDragOverList("passive"); setDragOverId(null); }}
             onDrop={() => onDropToList("passive")}
           >
@@ -366,9 +365,8 @@ const VocabularyPage = () => {
                   tabIndex={0}
                   onClick={() => handleCardClick(word)}
                   onKeyDown={(e) => e.key === "Enter" && handleCardClick(word)}
-                  className={`card-hover relative p-4 bg-card shadow-sm rounded-xl flex flex-row items-center gap-3 cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-ring opacity-90 ${
-                    dragOverList === "passive" && dragOverId === word.id ? "ring-2 ring-primary/40" : ""
-                  }`}
+                  className={`card-hover relative p-4 matte-glass no-rainbow rounded-xl flex flex-row items-center gap-3 cursor-grab active:cursor-grabbing focus:outline-none focus:ring-2 focus:ring-ring opacity-90 border-none shadow-none ${dragOverList === "passive" && dragOverId === word.id ? "ring-2 ring-primary/40" : ""
+                    }`}
                 >
                   {word.id != null && <GripVertical size={16} className="text-muted-foreground/60 shrink-0" />}
                   <div className="flex-1 min-w-0 text-left">
@@ -403,7 +401,7 @@ const VocabularyPage = () => {
                   tabIndex={0}
                   onClick={() => handleCardClick(word)}
                   onKeyDown={(e) => e.key === "Enter" && handleCardClick(word)}
-                  className="card-hover p-4 bg-card shadow-sm rounded-xl flex flex-row items-center gap-3 opacity-90 focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="card-hover p-4 matte-glass no-rainbow rounded-xl flex flex-row items-center gap-3 opacity-90 focus:outline-none focus:ring-2 focus:ring-ring border-none shadow-none"
                 >
                   <div className="flex-1 min-w-0 text-left">
                     <span className="text-base font-bold text-foreground block">{word.word_en}</span>
@@ -424,7 +422,7 @@ const VocabularyPage = () => {
       </div>
 
       <Dialog open={!!detailWord} onOpenChange={(o) => !o && setDetailWord(null)}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md matte-glass border-none">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {detailWord?.word_en}
@@ -466,7 +464,7 @@ const VocabularyPage = () => {
 
 
       <Dialog open={addOpen} onOpenChange={(o) => { setAddOpen(o); if (!o) resetDialog(); }}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md matte-glass border-none">
           <DialogHeader>
             <DialogTitle>{tr("vocab.addWord")}</DialogTitle>
           </DialogHeader>
@@ -477,7 +475,7 @@ const VocabularyPage = () => {
                 onChange={(e) => setInputWord(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleLookup()}
                 placeholder={tr("vocab.wordPlaceholder")}
-                className="flex-1 px-3 py-2 rounded-lg border border-input bg-background text-foreground placeholder:text-muted-foreground"
+                className="flex-1 px-4 py-2 glass-input border-none"
                 disabled={lookupLoading}
               />
               <Button onClick={handleLookup} disabled={lookupLoading || !inputWord.trim()} variant="secondary">

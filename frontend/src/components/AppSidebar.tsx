@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useLocation, useSearchParams } from "react-router-dom";
+import { Magnetic } from "@/components/Effects";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Home,
@@ -53,7 +54,7 @@ import { Label } from "@/components/ui/label";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { api } from "@/lib/api";
-import { cn, getAvatarGradient } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 const VOICE_CHAT_TITLES = ["Аудиоразговор", "Voice chat", "Audio Conversation"];
 const VOCAB_TITLES = ["Vocabulary Practice", "Практика словаря"];
@@ -172,7 +173,7 @@ export function AppSidebar() {
         <div className="w-8 h-8 rounded-xl gradient-primary flex items-center justify-center shrink-0 shadow-sm">
           <Zap size={15} className="text-primary-foreground" />
         </div>
-        {!collapsed && <span className="font-heading font-bold text-foreground text-base tracking-tight">LinguaAI</span>}
+        {!collapsed && <span className="font-serif italic font-bold text-foreground text-base tracking-tight">LinguaAI</span>}
       </div>
 
       <SidebarContent>
@@ -181,14 +182,16 @@ export function AppSidebar() {
             <SidebarMenu>
               {mainNav.map((item) => (
                 <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.url)}
-                    isActive={isActive(item.url)}
-                    className={linkClass}
-                  >
-                    <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
-                    {!collapsed && <span>{item.title}</span>}
-                  </SidebarMenuButton>
+                  <Magnetic strength={0.2}>
+                    <SidebarMenuButton
+                      onClick={() => navigate(item.url)}
+                      isActive={isActive(item.url)}
+                      className={linkClass}
+                    >
+                      <item.icon size={18} strokeWidth={1.6} className="shrink-0" />
+                      {!collapsed && <span>{item.title}</span>}
+                    </SidebarMenuButton>
+                  </Magnetic>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
@@ -200,13 +203,15 @@ export function AppSidebar() {
             {!collapsed && (
               <div className="space-y-3 mb-3">
                 <div className="flex justify-center px-3">
-                  <button
-                    onClick={() => navigate("/setup")}
-                    className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl border border-primary/40 hover:bg-muted text-primary font-semibold text-sm transition-colors"
-                  >
-                    <Plus size={18} strokeWidth={2} />
-                    {tr("setup.title")}
-                  </button>
+                  <Magnetic strength={0.3}>
+                    <button
+                      onClick={() => navigate("/setup")}
+                      className="flex items-center justify-center gap-2 min-w-[200px] px-8 py-3 rounded-xl border border-primary/40 hover:bg-muted text-primary font-semibold text-sm transition-colors"
+                    >
+                      <Plus size={18} strokeWidth={2} />
+                      {tr("setup.title")}
+                    </button>
+                  </Magnetic>
                 </div>
                 <p className="px-3 text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
                   {tr("nav.chatHistory")}
@@ -215,13 +220,15 @@ export function AppSidebar() {
             )}
             {collapsed && (
               <div className="flex justify-center px-2 mb-3">
-                <button
-                  onClick={() => navigate("/setup")}
-                  className="flex items-center justify-center p-2.5 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary transition-colors"
-                  title={tr("setup.title")}
-                >
-                  <Plus size={18} strokeWidth={2} />
-                </button>
+                <Magnetic strength={0.5}>
+                  <button
+                    onClick={() => navigate("/setup")}
+                    className="flex items-center justify-center p-2.5 rounded-xl hover:bg-muted text-primary transition-colors"
+                    title={tr("setup.title")}
+                  >
+                    <Plus size={18} strokeWidth={2} />
+                  </button>
+                </Magnetic>
               </div>
             )}
             <SidebarGroupContent className="flex-1 min-h-0 flex flex-col overflow-hidden">
@@ -239,30 +246,22 @@ export function AppSidebar() {
                               className={cn(
                                 "w-full flex items-start gap-2.5 px-3 py-2.5 rounded-xl text-left text-sm transition-colors",
                                 activeConvId === conv.id
-                                  ? "bg-primary/10 text-primary font-medium"
+                                  ? "text-primary font-medium"
                                   : "text-foreground hover:bg-muted"
                               )}
                             >
-                              <span className="shrink-0 mt-0.5 flex items-center gap-1">
+                              <span className="text-base shrink-0 mt-0.5 flex items-center gap-1">
                                 {(conv as { is_pinned?: boolean }).is_pinned && (
                                   <Pin size={12} className="text-primary shrink-0" />
                                 )}
                                 {(conv as { avatar?: string | null }).avatar ? (
-                                  <span
-                                    className={`w-7 h-7 rounded-lg flex items-center justify-center text-sm shadow-sm bg-gradient-to-br ${getAvatarGradient(
-                                      (conv as { avatar: string }).avatar
-                                    )}`}
-                                  >
-                                    {(conv as { avatar: string }).avatar}
+                                  <span className="text-base leading-none w-5 h-5 flex items-center justify-center">
+                                    {(conv as { avatar?: string | null }).avatar}
                                   </span>
                                 ) : (
                                   (() => {
                                     const Icon = getConvIcon(conv);
-                                    return Icon ? (
-                                      <span className="w-7 h-7 rounded-lg flex items-center justify-center bg-muted/60">
-                                        <Icon size={14} strokeWidth={1.6} className="text-muted-foreground" />
-                                      </span>
-                                    ) : null;
+                                    return Icon ? <Icon size={16} strokeWidth={1.6} className="shrink-0 text-muted-foreground" /> : null;
                                   })()
                                 )}
                               </span>
@@ -299,13 +298,7 @@ export function AppSidebar() {
                             {(conv as { is_pinned?: boolean }).is_pinned ? (
                               <Pin size={18} strokeWidth={1.6} />
                             ) : (conv as { avatar?: string | null }).avatar ? (
-                              <span
-                                className={`w-8 h-8 rounded-lg flex items-center justify-center text-base shadow-sm bg-gradient-to-br ${getAvatarGradient(
-                                  (conv as { avatar: string }).avatar
-                                )}`}
-                              >
-                                {(conv as { avatar: string }).avatar}
-                              </span>
+                              <span className="text-base">{(conv as { avatar?: string | null }).avatar}</span>
                             ) : (
                               (() => {
                                 const Icon = getConvIcon(conv);

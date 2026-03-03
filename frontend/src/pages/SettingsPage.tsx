@@ -44,7 +44,7 @@ import {
   Settings,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
@@ -218,7 +218,7 @@ const SettingsPage = () => {
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors whitespace-nowrap",
               activeCategory === id
-                ? "bg-primary/10 text-primary"
+                ? "text-primary font-bold"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
@@ -234,262 +234,267 @@ const SettingsPage = () => {
           <h1 className="text-xl font-bold text-foreground font-heading">{categoryLabel(activeCategory)}</h1>
         </motion.div>
 
-        {activeCategory === "general" && (
-          <motion.div variants={item} className="space-y-8">
-            <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl space-y-5">
-              <h2 className="text-sm font-semibold text-foreground">{tr("settings.theme")}</h2>
-              <div className="flex flex-wrap gap-3">
-                {[
-                  { value: "light" as const, icon: Sun, label: tr("settings.themeLight") },
-                  { value: "dark" as const, icon: Moon, label: tr("settings.themeDark") },
-                  { value: "system" as const, icon: Monitor, label: tr("settings.themeSystem") },
-                ].map(({ value, icon: Icon, label }) => (
-                  <button
-                    key={value}
-                    onClick={() => setTheme(value)}
-                    className={cn(
-                      "flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border",
-                      theme === value
-                        ? "bg-primary/10 text-primary border-primary/30"
-                        : "bg-muted/50 hover:bg-muted border-transparent"
-                    )}
-                  >
-                    <Icon size={18} strokeWidth={1.6} />
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </Card>
-
-            <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl space-y-4">
-              <h2 className="text-sm font-semibold text-foreground">{tr("settings.language")}</h2>
-              <div className="space-y-2">
-                <label className="text-xs text-muted-foreground">{tr("settings.nativeLang")}</label>
-                <Select value={lang} onValueChange={(v) => setLang(v as "ru" | "en")}>
-                  <SelectTrigger className="h-11 rounded-xl max-w-[200px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ru">Русский</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </Card>
-
-            <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl divide-y divide-border">
-              {[
-                { icon: Bell, label: tr("settings.reminders"), desc: tr("settings.remindersDesc"), value: notifications, set: setNotifications },
-                { icon: Volume2, label: tr("settings.sound"), desc: tr("settings.soundDesc"), value: sound, set: setSound },
-              ].map((pref) => (
-                <div key={pref.label} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                      <pref.icon size={16} className="text-muted-foreground" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{pref.label}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{pref.desc}</p>
-                    </div>
-                  </div>
-                  <Switch checked={pref.value} onCheckedChange={pref.set} />
-                </div>
-              ))}
-            </Card>
-          </motion.div>
-        )}
-
-        {activeCategory === "profile" && (
-          <motion.div variants={item}>
-            <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl space-y-5">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">{tr("settings.name")}</label>
-                <Input value={name} onChange={(e) => setName(e.target.value)} className="h-12 bg-background border-border rounded-xl" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">{tr("settings.email")}</label>
-                <div className="flex items-center gap-2">
-                  <Input value={email} disabled className="h-12 bg-muted border-border rounded-xl opacity-60 flex-1" />
-                  <Mail size={16} className="text-muted-foreground" />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">{tr("settings.dailyGoal")}</label>
-                <Input type="number" value={dailyGoal} onChange={(e) => setDailyGoal(e.target.value)} className="h-12 bg-background border-border rounded-xl w-36" />
-              </div>
-              {user && <Button onClick={handleSaveProfile} className="rounded-xl">Сохранить</Button>}
-            </Card>
-          </motion.div>
-        )}
-
-        {activeCategory === "data" && (
-          <motion.div variants={item}>
-            <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl space-y-1">
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button className="w-full flex items-center justify-between py-3.5 group">
-                    <div className="flex items-center gap-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                        <Smartphone size={16} className="text-muted-foreground" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm font-semibold text-foreground">{tr("settings.logoutAll")}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.logoutAllDesc")}</p>
-                      </div>
-                    </div>
-                    <ChevronRight size={16} className="text-muted-foreground" />
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="rounded-2xl">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{tr("settings.logoutAllConfirmTitle")}</AlertDialogTitle>
-                    <AlertDialogDescription>{tr("settings.logoutAllConfirmDesc")}</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl">{tr("settings.cancel")}</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleLogoutAll} className="rounded-xl">{tr("settings.confirm")}</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-
-              <Separator />
-
-              <button onClick={handleExportData} className="w-full flex items-center justify-between py-3.5 group">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                    <Download size={16} className="text-muted-foreground" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-foreground">{tr("settings.exportData")}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.exportDataDesc")}</p>
-                  </div>
-                </div>
-                <ChevronRight size={16} className="text-muted-foreground" />
-              </button>
-            </Card>
-          </motion.div>
-        )}
-
-        {activeCategory === "account" && (
-          <motion.div variants={item}>
-            <Card className="p-5 md:p-6 bg-card shadow-sm rounded-xl space-y-1">
-              <button
-                onClick={() => setShowPasswordSection(!showPasswordSection)}
-                className="w-full flex items-center justify-between py-3.5 group"
-              >
-                <div className="flex items-center gap-3.5">
-                  <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                    <KeyRound size={16} className="text-muted-foreground" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-foreground">{tr("settings.changePassword")}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.changePasswordDesc")}</p>
-                  </div>
-                </div>
-                <ChevronRight size={16} className={`text-muted-foreground transition-transform ${showPasswordSection ? "rotate-90" : ""}`} />
-              </button>
-
-              {showPasswordSection && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  className="pl-14 pr-2 pb-4 space-y-3"
-                >
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">{tr("settings.currentPassword")}</label>
-                    <div className="relative">
-                      <Input
-                        type={showPassword ? "text" : "password"}
-                        value={currentPassword}
-                        onChange={(e) => setCurrentPassword(e.target.value)}
-                        className="h-11 bg-background border-border rounded-xl text-sm pr-10"
-                      />
-                      <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, scale: 0.98, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: -10 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="space-y-8"
+          >
+            {activeCategory === "general" && (
+              <>
+                <Card className="p-5 md:p-6 matte-glass rounded-xl space-y-5 border-none shadow-none">
+                  <h2 className="text-sm font-semibold text-foreground">{tr("settings.theme")}</h2>
+                  <div className="flex flex-wrap gap-3">
+                    {[
+                      { value: "light" as const, icon: Sun, label: tr("settings.themeLight") },
+                      { value: "dark" as const, icon: Moon, label: tr("settings.themeDark") },
+                      { value: "system" as const, icon: Monitor, label: tr("settings.themeSystem") },
+                    ].map(({ value, icon: Icon, label }) => (
+                      <button
+                        key={value}
+                        onClick={() => setTheme(value)}
+                        className={cn(
+                          "flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border",
+                          theme === value
+                            ? "text-primary border-primary shadow-sm bg-primary/5"
+                            : "bg-muted/30 hover:bg-muted/50 border-transparent"
+                        )}
+                      >
+                        <Icon size={18} strokeWidth={1.6} />
+                        {label}
                       </button>
+                    ))}
+                  </div>
+                </Card>
+
+                <Card className="p-5 md:p-6 matte-glass rounded-xl space-y-4 border-none shadow-none">
+                  <h2 className="text-sm font-semibold text-foreground">{tr("settings.language")}</h2>
+                  <div className="space-y-2">
+                    <label className="text-xs text-muted-foreground">{tr("settings.nativeLang")}</label>
+                    <Select value={lang} onValueChange={(v) => setLang(v as "ru" | "en")}>
+                      <SelectTrigger className="h-11 rounded-xl max-w-[200px] glass-input border-none">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="matte-glass border-none">
+                        <SelectItem value="ru">Русский</SelectItem>
+                        <SelectItem value="en">English</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </Card>
+
+                <Card className="p-5 md:p-6 matte-glass rounded-xl divide-y divide-border/10 border-none shadow-none">
+                  {[
+                    { icon: Bell, label: tr("settings.reminders"), desc: tr("settings.remindersDesc"), value: notifications, set: setNotifications },
+                    { icon: Volume2, label: tr("settings.sound"), desc: tr("settings.soundDesc"), value: sound, set: setSound },
+                  ].map((pref) => (
+                    <div key={pref.label} className="flex items-center justify-between py-4 first:pt-0 last:pb-0">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
+                          <pref.icon size={16} className="text-muted-foreground" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold text-foreground">{pref.label}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{pref.desc}</p>
+                        </div>
+                      </div>
+                      <Switch checked={pref.value} onCheckedChange={pref.set} />
+                    </div>
+                  ))}
+                </Card>
+              </>
+            )}
+
+            {activeCategory === "profile" && (
+              <Card className="p-5 md:p-6 matte-glass rounded-xl space-y-5 border-none shadow-none">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">{tr("settings.name")}</label>
+                  <Input value={name} onChange={(e) => setName(e.target.value)} className="h-12 glass-input border-none px-4" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">{tr("settings.email")}</label>
+                  <div className="flex items-center gap-2">
+                    <Input value={email} disabled className="h-12 bg-muted/30 border-none rounded-xl opacity-60 flex-1 px-4" />
+                    <Mail size={16} className="text-muted-foreground" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">{tr("settings.dailyGoal")}</label>
+                  <Input type="number" value={dailyGoal} onChange={(e) => setDailyGoal(e.target.value)} className="h-12 glass-input border-none w-36 px-4" />
+                </div>
+                {user && <Button onClick={handleSaveProfile} className="btn-gradient">Сохранить</Button>}
+              </Card>
+            )}
+
+            {activeCategory === "data" && (
+              <Card className="p-5 md:p-6 matte-glass rounded-xl space-y-1 border-none shadow-none">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className="w-full flex items-center justify-between py-3.5 group px-2 rounded-xl hover:bg-white/5 transition-colors">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
+                          <Smartphone size={16} className="text-muted-foreground" />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold text-foreground">{tr("settings.logoutAll")}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.logoutAllDesc")}</p>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className="text-muted-foreground" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="matte-glass border-none rounded-2xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{tr("settings.logoutAllConfirmTitle")}</AlertDialogTitle>
+                      <AlertDialogDescription>{tr("settings.logoutAllConfirmDesc")}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-xl bg-muted/50">{tr("settings.cancel")}</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleLogoutAll} className="btn-gradient">{tr("settings.confirm")}</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                <Separator className="bg-border/10" />
+
+                <button onClick={handleExportData} className="w-full flex items-center justify-between py-3.5 group px-2 rounded-xl hover:bg-white/5 transition-colors">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
+                      <Download size={16} className="text-muted-foreground" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-foreground">{tr("settings.exportData")}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.exportDataDesc")}</p>
                     </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">{tr("settings.newPassword")}</label>
-                    <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="h-11 bg-background border-border rounded-xl text-sm" />
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-muted-foreground">{tr("settings.confirmPassword")}</label>
-                    <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="h-11 bg-background border-border rounded-xl text-sm" />
-                  </div>
-                  <Button onClick={handlePasswordReset} className="rounded-xl mt-1">{tr("settings.savePassword")}</Button>
-                </motion.div>
-              )}
+                  <ChevronRight size={16} className="text-muted-foreground" />
+                </button>
+              </Card>
+            )}
 
-              <Separator />
+            {activeCategory === "account" && (
+              <Card className="p-5 md:p-6 matte-glass rounded-xl space-y-1 border-none shadow-none">
+                <button
+                  onClick={() => setShowPasswordSection(!showPasswordSection)}
+                  className="w-full flex items-center justify-between py-3.5 group px-2 rounded-xl hover:bg-white/5 transition-colors"
+                >
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
+                      <KeyRound size={16} className="text-muted-foreground" />
+                    </div>
+                    <div className="text-left">
+                      <p className="text-sm font-semibold text-foreground">{tr("settings.changePassword")}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.changePasswordDesc")}</p>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className={`text-muted-foreground transition-transform ${showPasswordSection ? "rotate-90" : ""}`} />
+                </button>
 
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button className="w-full flex items-center justify-between py-3.5 group">
-                    <div className="flex items-center gap-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-muted flex items-center justify-center">
-                        <LogOut size={16} className="text-muted-foreground" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm font-semibold text-foreground">{tr("settings.logout")}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.logoutDesc")}</p>
+                {showPasswordSection && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="pl-14 pr-2 pb-4 space-y-3"
+                  >
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">{tr("settings.currentPassword")}</label>
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          value={currentPassword}
+                          onChange={(e) => setCurrentPassword(e.target.value)}
+                          className="h-11 glass-input border-none px-4 text-sm pr-10"
+                        />
+                        <button onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                          {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                        </button>
                       </div>
                     </div>
-                    <ChevronRight size={16} className="text-muted-foreground" />
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="rounded-2xl">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{tr("settings.logoutConfirmTitle")}</AlertDialogTitle>
-                    <AlertDialogDescription>{tr("settings.logoutConfirmDesc")}</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl">{tr("settings.cancel")}</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={async () => {
-                        await logout();
-                        toast({ title: "👋", description: tr("settings.loggedOut") });
-                        navigate("/");
-                      }}
-                      className="rounded-xl"
-                    >
-                      {tr("settings.confirm")}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-
-              <Separator />
-
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button className="w-full flex items-center justify-between py-3.5 group">
-                    <div className="flex items-center gap-3.5">
-                      <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
-                        <Trash2 size={16} className="text-destructive" />
-                      </div>
-                      <div className="text-left">
-                        <p className="text-sm font-semibold text-destructive">{tr("settings.deleteAccount")}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.deleteAccountDesc")}</p>
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">{tr("settings.newPassword")}</label>
+                      <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="h-11 glass-input border-none px-4 text-sm" />
                     </div>
-                    <ChevronRight size={16} className="text-muted-foreground" />
-                  </button>
-                </AlertDialogTrigger>
-                <AlertDialogContent className="rounded-2xl">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{tr("settings.deleteConfirmTitle")}</AlertDialogTitle>
-                    <AlertDialogDescription>{tr("settings.deleteConfirmDesc")}</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel className="rounded-xl">{tr("settings.cancel")}</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteAccount} className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90">{tr("settings.deleteForever")}</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </Card>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-muted-foreground">{tr("settings.confirmPassword")}</label>
+                      <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="h-11 glass-input border-none px-4 text-sm" />
+                    </div>
+                    <Button onClick={handlePasswordReset} className="btn-gradient mt-1 shadow-none">{tr("settings.savePassword")}</Button>
+                  </motion.div>
+                )}
+
+                <Separator className="bg-border/10" />
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className="w-full flex items-center justify-between py-3.5 group px-2 rounded-xl hover:bg-white/5 transition-colors">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 rounded-xl bg-muted/50 flex items-center justify-center">
+                          <LogOut size={16} className="text-muted-foreground" />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold text-foreground">{tr("settings.logout")}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.logoutDesc")}</p>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className="text-muted-foreground" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="matte-glass border-none rounded-2xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{tr("settings.logoutConfirmTitle")}</AlertDialogTitle>
+                      <AlertDialogDescription>{tr("settings.logoutConfirmDesc")}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-xl bg-muted/50">{tr("settings.cancel")}</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={async () => {
+                          await logout();
+                          toast({ title: "👋", description: tr("settings.loggedOut") });
+                          navigate("/");
+                        }}
+                        className="btn-gradient"
+                      >
+                        {tr("settings.confirm")}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+
+                <Separator className="bg-border/10" />
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <button className="w-full flex items-center justify-between py-3.5 group px-2 rounded-xl hover:bg-white/5 transition-colors">
+                      <div className="flex items-center gap-3.5">
+                        <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+                          <Trash2 size={16} className="text-destructive" />
+                        </div>
+                        <div className="text-left">
+                          <p className="text-sm font-semibold text-destructive">{tr("settings.deleteAccount")}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{tr("settings.deleteAccountDesc")}</p>
+                        </div>
+                      </div>
+                      <ChevronRight size={16} className="text-muted-foreground" />
+                    </button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="matte-glass border-none rounded-2xl">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{tr("settings.deleteConfirmTitle")}</AlertDialogTitle>
+                      <AlertDialogDescription>{tr("settings.deleteConfirmDesc")}</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="rounded-xl bg-muted/50">{tr("settings.cancel")}</AlertDialogCancel>
+                      <AlertDialogAction onClick={handleDeleteAccount} className="rounded-xl bg-destructive text-destructive-foreground hover:bg-destructive/90 px-6">{tr("settings.deleteForever")}</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </Card>
+            )}
           </motion.div>
-        )}
+        </AnimatePresence>
       </div>
     </motion.div>
   );

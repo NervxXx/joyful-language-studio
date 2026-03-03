@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { api } from "@/lib/api";
 
@@ -49,13 +49,13 @@ function WordSpan({
   }
 
   return (
-    <HoverCard openDelay={400} closeDelay={100} onOpenChange={(open) => open && fetchOnOpen()}>
-      <HoverCardTrigger asChild>
-        <span className="border-b border-dashed border-muted-foreground/40 cursor-help hover:border-primary/60 hover:text-primary transition-colors">
+    <Popover onOpenChange={(open) => open && fetchOnOpen()}>
+      <PopoverTrigger asChild>
+        <span className="border-b border-dashed border-muted-foreground/40 cursor-pointer hover:border-primary/60 hover:text-primary transition-colors">
           {children}
         </span>
-      </HoverCardTrigger>
-      <HoverCardContent align="center" className="w-72">
+      </PopoverTrigger>
+      <PopoverContent align="center" side="bottom" sideOffset={10} collisionPadding={16} className="w-72">
         {loading && <p className="text-sm text-muted-foreground">{tr("vocab.loading")}</p>}
         {error && <p className="text-sm text-destructive">{error}</p>}
         {data && (
@@ -69,8 +69,8 @@ function WordSpan({
             )}
           </div>
         )}
-      </HoverCardContent>
-    </HoverCard>
+      </PopoverContent>
+    </Popover>
   );
 }
 
